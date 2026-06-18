@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mes Jumeaux de Naissance</title>
+  <script src="https://cdn.jsdelivr.net/npm/wikidata-sdk/dist/wikidata-sdk.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    #top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #0f172a;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e3a5f, #2d6a4f);
+      padding: 1rem 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #f0f9ff;
+    }
+
+    header p {
+      margin-top: 0.4rem;
+      color: #94d2bd;
+      font-size: 1rem;
+    }
+
+    .search-section {
+      max-width: 600px;
+      margin: 0.8rem auto;
+      padding: 0 1rem 0.8rem;
+      text-align: center;
+    }
+
+    .date-inputs {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    select, input[type="number"] {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+      min-width: 100px;
+    }
+
+    select:focus, input[type="number"]:focus {
+      border-color: #38bdf8;
+    }
+
+    .btn-search {
+      background: linear-gradient(135deg, #0ea5e9, #2d6a4f);
+      color: white;
+      border: none;
+      padding: 0.7rem 2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      font-weight: 600;
+    }
+
+    .btn-search:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-search:active { transform: translateY(0); }
+    .btn-search:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .limit-field {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+
+    .limit-field input {
+      width: 70px;
+      text-align: center;
+    }
+
+    #status {
+      text-align: center;
+      margin: 1rem auto;
+      max-width: 600px;
+      padding: 0 1rem;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #334155;
+      border-top-color: #38bdf8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error {
+      color: #f87171;
+      background: #1e1414;
+      padding: 0.8rem 1.2rem;
+      border-radius: 8px;
+      border-left: 3px solid #f87171;
+    }
+
+    .info {
+      color: #94d2bd;
+    }
+
+    #results {
+      max-width: 900px;
+      margin: 0 auto 3rem;
+      padding: 0 1rem;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .results-count {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1.2rem;
+      transition: transform 0.15s, box-shadow 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      border-color: #38bdf8;
+    }
+
+    .card-name {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #f0f9ff;
+    }
+
+    .card-date {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    .card-date span {
+      color: #38bdf8;
+      font-weight: 500;
+    }
+
+    .card-link {
+      margin-top: auto;
+      display: inline-block;
+      font-size: 0.8rem;
+      color: #2d6a4f;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .card-link:hover { color: #52b788; }
+
+    .tag-year {
+      display: inline-block;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 999px;
+      padding: 0.15rem 0.6rem;
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    #pagination {
+      max-width: 900px;
+      margin: 1.5rem auto 3rem;
+      padding: 0 1rem;
+    }
+
+    .pager {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .pager-nav, .pager-num {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .pager-nav:hover:not(:disabled), .pager-num:hover {
+      background: #334155;
+      border-color: #38bdf8;
+    }
+
+    .pager-nav:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .pager-num.active {
+      background: #0ea5e9;
+      border-color: #0ea5e9;
+      color: #fff;
+      font-weight: 700;
+      cursor: default;
+    }
+
+    .btn-stop {
+      background: #7f1d1d;
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+      padding: 0.5rem 1.8rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-stop:hover { background: #991b1b; }
+
+    .year-section {
+      margin-bottom: 2rem;
+    }
+
+    .year-heading {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .year-count {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: #64748b;
+    }
+
+    .card-desc {
+      font-size: 0.8rem;
+      color: #64748b;
+      font-style: italic;
+    }
+
+    .btn-export {
+      background: #1e3a5f;
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+      padding: 0.5rem 1.4rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-export:hover { background: #1e4976; }
+
+    /* ── Menu flottant ── */
+    .nav-toggle {
+      position: fixed;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 200;
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-toggle:hover { background: #334155; color: #e2e8f0; }
+
+    .year-nav {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: 160px;
+      background: #0f172a;
+      border-right: 1px solid #1e293b;
+      z-index: 199;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease;
+    }
+    .year-nav.hidden { transform: translateX(-160px); }
+
+    .year-nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.7rem 0.8rem;
+      border-bottom: 1px solid #1e293b;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      flex-shrink: 0;
+    }
+    .year-nav-close {
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 1;
+      padding: 0.1rem 0.3rem;
+    }
+    .year-nav-close:hover { color: #e2e8f0; }
+
+    #year-nav-list {
+      list-style: none;
+      overflow-y: auto;
+      flex: 1;
+      padding: 0.4rem 0;
+    }
+    #year-nav-list::-webkit-scrollbar { width: 4px; }
+    #year-nav-list::-webkit-scrollbar-track { background: transparent; }
+    #year-nav-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+
+    .nav-year-item a {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      text-decoration: none;
+      transition: background 0.1s, color 0.1s;
+      border-left: 3px solid transparent;
+    }
+    .nav-year-item a:hover { background: #1e293b; color: #e2e8f0; }
+    .nav-year-item.has-results a { color: #38bdf8; border-left-color: #38bdf8; }
+    .nav-year-item.is-empty  a { color: #475569; border-left-color: #334155; }
+    .nav-year-item.has-error a { color: #f87171; border-left-color: #f87171; }
+    .nav-year-item .nav-dot  { font-size: 0.6rem; flex-shrink: 0; }
+
+    /* ── Bouton archives dans le header ── */
+    .btn-archives {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #f0f9ff;
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-archives:hover { background: rgba(255,255,255,0.15); }
+    header { position: relative; }
+
+    /* ── Panneau archives ── */
+    .archives-panel {
+      position: fixed;
+      top: 0; right: 0;
+      height: 100vh;
+      width: 300px;
+      background: #0f172a;
+      border-left: 1px solid #1e293b;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease;
+    }
+    .archives-panel.hidden { transform: translateX(300px); }
+
+    .archives-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid #1e293b;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      flex-shrink: 0;
+    }
+    .archives-header button {
+      background: none; border: none; color: #64748b;
+      cursor: pointer; font-size: 1rem;
+    }
+    .archives-header button:hover { color: #e2e8f0; }
+
+    #archives-list {
+      list-style: none;
+      overflow-y: auto;
+      flex: 1;
+      padding: 0.5rem 0;
+    }
+    #archives-list::-webkit-scrollbar { width: 4px; }
+    #archives-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+
+    .archive-item {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid #1e293b;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .archive-item:hover { background: #1e293b; }
+    .archive-item-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+    .archive-item-meta {
+      font-size: 0.75rem;
+      color: #475569;
+      margin-top: 0.2rem;
+    }
+
+    .retry-errors-banner {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      background: #1c1010;
+      border: 1px solid #7f1d1d;
+      color: #fca5a5;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    #duration-warning {
+      text-align: center;
+      font-size: 0.82rem;
+      color: #fbbf24;
+      background: #1c1a0a;
+      border-top: 1px solid #78350f;
+      padding: 0.35rem 1rem;
+    }
+
+    /* ── Timeline ── */
+    #timeline {
+      display: none;
+      max-width: 900px;
+      margin: 1rem auto 2rem;
+      padding: 0 1rem;
+    }
+
+    .tl-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #1e293b;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    .tl-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+      transition: background 0.1s;
+    }
+    .tl-row.clickable { cursor: pointer; }
+    .tl-row.clickable:hover { background: #1e293b; }
+    .tl-row.tl-active { background: #1e3a5f; }
+
+    .tl-year {
+      width: 48px;
+      text-align: right;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+    }
+    .tl-row.tl-active .tl-year { color: #38bdf8; font-weight: 600; }
+
+    .tl-bar-wrap {
+      flex: 1;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tl-bar {
+      height: 14px;
+      background: linear-gradient(90deg, #0ea5e9 0%, #2d6a4f 100%);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      min-width: 2px;
+      transition: width 0.4s ease;
+    }
+    .tl-row.tl-active .tl-bar { background: linear-gradient(90deg, #38bdf8, #52b788); }
+
+    .tl-count {
+      font-size: 0.7rem;
+      color: #e2e8f0;
+      padding: 0 0.35rem;
+      white-space: nowrap;
+    }
+
+    .tl-empty { font-size: 0.75rem; color: #334155; font-style: italic; }
+    .tl-error { font-size: 0.75rem; color: #f87171; }
+    .tl-rendered { font-size: 0.7rem; color: #52b788; margin-left: 0.3rem; }
+
+    .btn-load-img {
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      padding: 0.2rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      margin-left: auto;
+    }
+    .btn-load-img:hover { background: #1e293b; color: #38bdf8; border-color: #38bdf8; }
+    .btn-load-img:disabled { opacity: 0.5; cursor: default; }
+
+    .btn-retry {
+      background: #1e293b;
+      border: 1px solid #f87171;
+      color: #f87171;
+      padding: 0.3rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-retry:hover { background: #2d1f1f; }
+
+    @media print {
+      #top-bar, #status, #stop-bar, #export-bar, #retry-errors-bar, #timeline, .year-nav, .nav-toggle { display: none !important; }
+      body { background: #fff; color: #000; font-family: Georgia, serif; }
+      #results { max-width: 100%; padding: 0; margin: 0; }
+      .year-heading { font-size: 1.2rem; color: #000; border-bottom: 2px solid #000; margin-bottom: 0.5rem; page-break-after: avoid; }
+      .year-count { color: #555; }
+      .year-section { page-break-inside: avoid; margin-bottom: 1.5rem; }
+      .grid { display: block; columns: 2; column-gap: 1rem; }
+      .card { break-inside: avoid; background: none; border: 1px solid #ccc; border-radius: 4px; padding: 0.5rem; margin-bottom: 0.5rem; box-shadow: none; }
+      .card:hover { transform: none; box-shadow: none; }
+      .card-name { font-size: 0.95rem; font-weight: bold; color: #000; }
+      .card-desc { color: #444; }
+      .card-link { color: #00519e; font-size: 0.75rem; }
+      img { max-width: 60px; max-height: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="top-bar">
+<header>
+  <h1>Mes Jumeaux de Naissance</h1>
+  <p>Découvrez les personnalités nées le même jour que vous</p>
+  <button class="btn-archives" onclick="toggleArchives()">📂 Archives</button>
+</header>
+
+<div class="search-section">
+  <div class="date-inputs">
+    <div class="field">
+      <label>Jour</label>
+      <input type="number" id="day" min="1" max="31" value="17" style="width:80px">
+    </div>
+    <div class="field">
+      <label>Mois</label>
+      <select id="month">
+        <option value="1">Janvier</option>
+        <option value="2">Février</option>
+        <option value="3">Mars</option>
+        <option value="4">Avril</option>
+        <option value="5">Mai</option>
+        <option value="6" selected>Juin</option>
+        <option value="7">Juillet</option>
+        <option value="8">Août</option>
+        <option value="9">Septembre</option>
+        <option value="10">Octobre</option>
+        <option value="11">Novembre</option>
+        <option value="12">Décembre</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>&nbsp;</label>
+      <button class="btn-search" id="searchBtn" onclick="search()">Rechercher</button>
+    </div>
+  </div>
+  <div class="limit-field">
+    <label>Année de départ :</label>
+    <input type="number" id="startYear" value="2020" min="1000" max="2100" style="width:90px">
+    <label style="margin-left:0.5rem">Jusqu'en :</label>
+    <input type="number" id="endYear" value="1000" min="1000" max="2100" style="width:90px">
+  </div>
+  <div id="duration-warning"></div>
+</div>
+</div><!-- /#top-bar -->
+
+<div id="load-count" style="display:none;text-align:center;color:#64748b;font-size:0.85rem;margin:0.5rem 0"></div>
+<div id="status"></div>
+<div id="stop-bar" style="display:none;text-align:center;margin-bottom:1rem">
+  <button class="btn-stop" onclick="stopSearch()">⏹ Arrêter</button>
+</div>
+<div id="retry-errors-bar" style="display:none;text-align:center;margin-bottom:1rem">
+  <div class="retry-errors-banner">
+    <span>⚠ <strong><span id="retry-errors-count">0</span> année(s)</strong> en erreur lors de la recherche initiale.</span>
+    <button class="btn-retry" onclick="retryAllErrors()">↩ Relancer toutes les erreurs</button>
+  </div>
+</div>
+<div id="export-bar" style="display:none;text-align:center;margin-bottom:1.5rem">
+  <button class="btn-export" onclick="exportQmd()">⬇ Quarto (.qmd)</button>
+  <button class="btn-export" onclick="exportHtml()" style="margin-left:0.5rem">💾 HTML</button>
+  <button class="btn-export" onclick="exportPdf()"  style="margin-left:0.5rem">🖨 PDF</button>
+</div>
+<div id="timeline"></div>
+<div id="results"></div>
+
+<!-- Menu archives -->
+<div id="archives-panel" class="archives-panel hidden">
+  <div class="archives-header">
+    <span>Recherches enregistrées</span>
+    <button onclick="toggleArchives()">✕</button>
+  </div>
+  <ul id="archives-list"><li style="color:#475569;padding:0.5rem 0.8rem;font-size:0.85rem">Chargement…</li></ul>
+</div>
+
+<!-- Menu flottant années -->
+<nav id="year-nav" class="year-nav hidden">
+  <div class="year-nav-header">
+    <span>Années</span>
+    <button class="year-nav-close" onclick="toggleNav()">✕</button>
+  </div>
+  <ul id="year-nav-list"></ul>
+</nav>
+<button id="nav-toggle" class="nav-toggle" onclick="toggleNav()" title="Navigation par année">☰</button>
+
+<script>
+  const MONTHS = ['','Janvier','Février','Mars','Avril','Mai','Juin',
+    'Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+  let state = {
+    running: false, allResults: [], errorYears: [], yearItems: {},
+    day: 17, month: 6, startYear: 2025, endYear: 1800,
+    fromArchive: false,
+  };
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function buildQuery(day, month, year) {
+    const date = `${year}-${pad(month)}-${pad(day)}`;
+    return `SELECT ?item ?articlename ?itemLabel ?itemDescription
+WHERE {
+   VALUES ?dod {"${date}"^^xsd:dateTime}
+    ?dod ^wdt:P569 ?item .
+    ?item wikibase:sitelinks ?sl .
+    ?item ^schema:about ?article .
+    ?article schema:isPartOf <https://fr.wikipedia.org/>;
+    schema:name ?articlename .
+  SERVICE wikibase:label
+    {
+      bd:serviceParam wikibase:language "[AUTO_LANGUAGE],mul,en" .
+      ?item rdfs:label ?itemLabel .
+      ?item schema:description ?itemDescription .
+    }
+  
+} ORDER BY ASC(UCASE(?sortname)) ASC(UCASE(?itemLabel))`;
+  }
+
+  async function proxyFetch(sparql) {
+    const body = new URLSearchParams({ query: sparql });
+    const response = await fetch('proxy.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
+    return response.json();
+  }
+
+  async function search() {
+    const day       = parseInt(document.getElementById('day').value);
+    const month     = parseInt(document.getElementById('month').value);
+    const startYear = parseInt(document.getElementById('startYear').value);
+    const endYear   = parseInt(document.getElementById('endYear').value);
+
+    if (!day || day < 1 || day > 31) {
+      showStatus('error', 'Veuillez saisir un jour valide (1–31).');
+      return;
+    }
+
+    state.running     = true;
+    state.allResults  = [];
+    state.errorYears  = [];
+    state.fromArchive = false;
+    state.day         = day;
+    state.month       = month;
+    state.startYear   = startYear;
+    state.endYear     = endYear;
+    document.getElementById('searchBtn').disabled = true;
+    document.getElementById('stop-bar').style.display = 'block';
+    document.getElementById('export-bar').style.display = 'none';
+    document.getElementById('results').innerHTML = '';
+    document.getElementById('timeline').style.display = 'none';
+    document.getElementById('timeline').innerHTML = '';
+    document.getElementById('year-nav-list').innerHTML = '';
+
+    await fetchYear(day, month, startYear, endYear);
+
+    finishSearch();
+  }
+
+  async function fetchYear(day, month, year, endYear) {
+    if (!state.running || year < endYear) return;
+
+    showStatus('loading', `Interrogation de l'année ${year}…`);
+
+    try {
+      const data = await proxyFetch(buildQuery(day, month, year));
+      const results = wdk.simplifySparqlResults(data);
+      if (results.length > 0) appendYearSection(year, day, month, results);
+      else appendEmptyYear(year);
+    } catch (err) {
+      appendError(year, err.message);
+    }
+
+    // Pause d'une minute entre chaque requête pour respecter les limites de l'API
+    if (state.running && year - 1 >= endYear) {
+      for (let s = 61; s > 0 && state.running; s--) {
+        showStatus('loading', `Prochaine requête dans ${s}s (année ${year - 1})…`);
+        await new Promise(r => setTimeout(r, 1000));
+      }
+    }
+
+    await fetchYear(day, month, year - 1, endYear);
+  }
+
+  function appendYearSection(year, day, month, results, { skipImages = false } = {}) {
+    const container = document.getElementById('results');
+
+    const section = document.createElement('div');
+    section.className = 'year-section';
+    section.id = `year-${year}`;
+
+    // Stocker les items pour le chargement différé des images
+    state.yearItems[year] = results;
+
+    const heading = document.createElement('div');
+    heading.className = 'year-heading';
+    heading.innerHTML = `${year}
+      <span class="year-count">${results.length} personnalité${results.length > 1 ? 's' : ''}</span>
+      ${skipImages ? `<button class="btn-load-img" onclick="loadYearImages(${year})">🖼 Images</button>` : ''}`;
+    section.appendChild(heading);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+
+    for (const r of results) {
+      const name        = r.item.label    || '(sans nom)';
+      const desc        = r.item.description || '';
+      const article     = r.articlename  || '';
+      const wikidataUrl = r.item.value ? `https://www.wikidata.org/wiki/${r.item.value}` : '#';
+      const wpUrl       = article ? `https://fr.wikipedia.org/wiki/${encodeURIComponent(article)}` : null;
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-name">${escapeHtml(name)}</div>
+        ${desc ? `<div class="card-desc">${escapeHtml(desc)}</div>` : ''}
+        <img id="${r.item.value}-img" />
+        <div style="margin-top:auto;display:flex;gap:0.6rem;flex-wrap:wrap">
+          ${wpUrl ? `<a class="card-link" href="${escapeHtml(wpUrl)}" target="_blank" rel="noopener">Wikipedia →</a>` : ''}
+          <a class="card-link" href="${escapeHtml(wikidataUrl)}" target="_blank" rel="noopener">Wikidata →</a>
+        </div>`;
+      grid.appendChild(card);
+    }
+
+    section.appendChild(grid);
+    container.appendChild(section);
+
+    // Scroll jusqu'à la section de l'année courante
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Collecte pour l'export + nav
+    state.allResults.push({ year, items: results });
+    document.getElementById('export-bar').style.display = 'block';
+    addNavEntry(year, 'has-results', results.length);
+
+    // Async image fetch — skipped on archive load
+    if (!skipImages) {
+      for (const r of results) {
+        const imgEl = document.getElementById(r.item.value + '-img');
+        if (imgEl) {
+          imgEl.classList.remove('loaded');
+          getP18Image(r.item.value).then(url => {
+            if (!url) return;
+            imgEl.src = url;
+            imgEl.onload = () => imgEl.classList.add('loaded');
+          });
+        }
+      }
+    }
+
+  }
+
+  // Fetch P18 (image) claim and return a Wikimedia Commons thumbnail URL, or null
+  async function getP18Image(entityId) {
+    try {
+      const url  = `https://www.wikidata.org/w/api.php?action=wbgetentities`
+                  + `&ids=${entityId}&props=claims&format=json&origin=*`;
+      const r    = await fetch(url);
+      const data = await r.json();
+      const p18  = data.entities?.[entityId]?.claims?.P18 ?? [];
+      if (!p18.length) return null;
+      const filename = p18[0].mainsnak?.datavalue?.value;
+      if (!filename) return null;
+      const encoded = encodeURIComponent(filename.replace(/ /g, '_'));
+      return `https://commons.wikimedia.org/w/index.php`
+            + `?title=Special:Redirect/file/${encoded}&width=120`;
+    } catch { return null; }
+  }
+
+  function appendEmptyYear(year) {
+    const container = document.getElementById('results');
+    const section = document.createElement('div');
+    section.className = 'year-section';
+    section.id = `year-${year}`;
+    section.innerHTML = `
+      <div class="year-heading">${year} <span class="year-count">aucun résultat</span></div>
+      <p style="color:#475569;font-size:0.85rem;font-style:italic">Pas de personne née à cette date.</p>`;
+    container.appendChild(section);
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    addNavEntry(year, 'is-empty');
+  }
+
+  function appendError(year, msg) {
+    if (!state.errorYears.includes(year)) state.errorYears.push(year);
+    const container = document.getElementById('results');
+    const section = document.createElement('div');
+    section.className = 'year-section';
+    section.id = `year-${year}`;
+    section.innerHTML = `
+      <div class="year-heading" style="color:#f87171;border-bottom-color:#7f1d1d">
+        ${year} <span class="year-count" style="color:#f87171">erreur</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;padding:0.5rem 0">
+        <span style="color:#f87171;font-size:0.85rem">${escapeHtml(msg)}</span>
+        <button class="btn-retry" onclick="retryYear(${year})">↩ Relancer</button>
+      </div>`;
+    container.appendChild(section);
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    addNavEntry(year, 'has-error');
+  }
+
+  async function retryYear(year) {
+    // Relance individuelle sans pause (requête unique)
+    state.errorYears = state.errorYears.filter(y => y !== year);
+    await retrySingleYear(year);
+  }
+
+  function addNavEntry(year, type, count) {
+    const list = document.getElementById('year-nav-list');
+    const existing = document.getElementById(`nav-${year}`);
+    if (existing) { existing.remove(); }
+
+    const dot = type === 'has-results' ? '●' : type === 'has-error' ? '✕' : '○';
+    const label = type === 'has-results' ? `${year} (${count})` : `${year}`;
+    const li = document.createElement('li');
+    li.className = `nav-year-item ${type}`;
+    li.id = `nav-${year}`;
+    li.innerHTML = `<a href="#year-${year}" onclick="document.getElementById('year-${year}')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">
+      <span class="nav-dot">${dot}</span>${label}</a>`;
+    list.appendChild(li);
+  }
+
+  function updateNavEntry(year, type) {
+    const li = document.getElementById(`nav-${year}`);
+    if (!li) return;
+    li.className = `nav-year-item ${type}`;
+  }
+
+  // ── Timeline ─────────────────────────────────────────────────────────────
+  function renderTimeline() {
+    const tl = document.getElementById('timeline');
+    tl.style.display = 'block';
+    tl.innerHTML = '';
+    document.getElementById('results').innerHTML = '';
+
+    const { allResults, errorYears } = state;
+    const totalPersons = allResults.reduce((s, r) => s + r.items.length, 0);
+    const maxCount     = Math.max(...allResults.map(r => r.items.length), 1);
+
+    // En-tête
+    const hdr = document.createElement('div');
+    hdr.className = 'tl-header';
+    hdr.innerHTML = `<span>${allResults.length + errorYears.length} années · ${totalPersons} personnalités</span>
+      <span>Cliquez sur une année pour afficher les personnalités</span>`;
+    tl.appendChild(hdr);
+
+    // Lignes résultats (triées décroissant)
+    for (const { year, items } of allResults) {
+      const row = document.createElement('div');
+      row.id        = `tl-${year}`;
+      row.className = 'tl-row' + (items.length ? ' clickable' : '');
+
+      const pct = items.length ? Math.max(1, Math.round(items.length / maxCount * 100)) : 0;
+      row.innerHTML = `
+        <span class="tl-year">${year}</span>
+        <div class="tl-bar-wrap">
+          ${items.length
+            ? `<div class="tl-bar" style="width:${pct}%"><span class="tl-count">${items.length}</span></div>`
+            : `<span class="tl-empty">aucun résultat</span>`}
+        </div>`;
+
+      if (items.length) row.onclick = () => showYearFromTimeline(year);
+      tl.appendChild(row);
+    }
+
+    // Lignes erreurs
+    for (const year of [...errorYears].sort((a, b) => b - a)) {
+      const row = document.createElement('div');
+      row.id        = `tl-${year}`;
+      row.className = 'tl-row clickable';
+      row.innerHTML = `
+        <span class="tl-year">${year}</span>
+        <div class="tl-bar-wrap">
+          <span class="tl-error">⚠ erreur — cliquer pour relancer</span>
+        </div>`;
+      row.onclick = () => retryYear(year);
+      tl.appendChild(row);
+    }
+  }
+
+  function updateTimelineRow(year) {
+    const row = document.getElementById(`tl-${year}`);
+    if (!row) return;
+    const entry = state.allResults.find(r => r.year === year);
+    if (!entry) return;
+    const maxCount = Math.max(...state.allResults.map(r => r.items.length), 1);
+    const pct      = Math.max(1, Math.round(entry.items.length / maxCount * 100));
+    row.className  = 'tl-row clickable';
+    row.innerHTML  = `
+      <span class="tl-year">${year}</span>
+      <div class="tl-bar-wrap">
+        <div class="tl-bar" style="width:${pct}%"><span class="tl-count">${entry.items.length}</span></div>
+        <span class="tl-rendered">✓ affiché</span>
+      </div>`;
+    row.onclick = () => showYearFromTimeline(year);
+  }
+
+  function showYearFromTimeline(year) {
+    // Retirer le focus des autres lignes
+    document.querySelectorAll('.tl-row.tl-active').forEach(r => r.classList.remove('tl-active'));
+    const row = document.getElementById(`tl-${year}`);
+    if (row) row.classList.add('tl-active');
+
+    // Si la section est déjà rendue, juste scroller
+    const existing = document.getElementById(`year-${year}`);
+    if (existing) {
+      existing.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    // Rendre la section
+    const entry = state.allResults.find(r => r.year === year);
+    if (!entry) return;
+    if (entry.items.length) {
+      appendYearSection(year, state.day, state.month, entry.items, { skipImages: true });
+    } else {
+      appendEmptyYear(year);
+    }
+
+    // Marquer comme affiché dans la timeline
+    if (row) {
+      const rendered = document.createElement('span');
+      rendered.className = 'tl-rendered';
+      rendered.textContent = '✓ affiché';
+      row.querySelector('.tl-bar-wrap')?.appendChild(rendered);
+    }
+  }
+
+  async function loadYearImages(year) {
+    const results = state.yearItems[year];
+    if (!results) return;
+    const btn = document.querySelector(`#year-${year} .btn-load-img`);
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Chargement…'; }
+    for (const r of results) {
+      const imgEl = document.getElementById(r.item.value + '-img');
+      if (imgEl && !imgEl.src) {
+        const url = await getP18Image(r.item.value);
+        if (url) { imgEl.src = url; imgEl.onload = () => imgEl.classList.add('loaded'); }
+      }
+    }
+    if (btn) { btn.textContent = '✓ Images chargées'; }
+  }
+
+  function toggleNav() {
+    document.getElementById('year-nav').classList.toggle('hidden');
+  }
+
+  function stopSearch() {
+    state.running = false;
+  }
+
+  function finishSearch() {
+    state.running = false;
+    document.getElementById('searchBtn').disabled = false;
+    document.getElementById('stop-bar').style.display = 'none';
+    clearStatus();
+  }
+
+  function showStatus(type, msg) {
+    const el = document.getElementById('status');
+    if (type === 'loading') {
+      el.innerHTML = `<span class="spinner"></span><span class="info">${msg}</span>`;
+    } else if (type === 'error') {
+      el.innerHTML = `<div class="error">${msg}</div>`;
+    }
+  }
+
+  function clearStatus() { document.getElementById('status').innerHTML = ''; }
+
+  function escapeHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Nom de fichier commun ────────────────────────────────────────────────
+  function exportFilename() {
+    const { day, month, allResults, startYear, endYear } = state;
+    const dd = String(day).padStart(2, '0');
+    const mm = String(month).padStart(2, '0');
+    const yr1 = allResults.length ? allResults[0].year       : startYear;
+    const yr2 = allResults.length ? allResults.at(-1).year   : endYear;
+    return `jumeaux-${dd}-${mm}_${yr1}-${yr2}`;
+  }
+
+  // ── Export Quarto Markdown ───────────────────────────────────────────────
+  function exportQmd() {
+    const { day, month, allResults, startYear, endYear } = state;
+    const dd = String(day).padStart(2,'0');
+    const mm = String(month).padStart(2,'0');
+    const dateLabel = `${dd}/${mm}`;
+    const today     = new Date().toISOString().substring(0, 10);
+    const filename  = exportFilename();
+    const totalCount = allResults.reduce((s, y) => s + y.items.length, 0);
+
+    let qmd = `---\ntitle: "Jumeaux de naissance — ${dateLabel}"\ndate: "${today}"\nformat:\n  html:\n    toc: true\n  pdf:\n    toc: true\n---\n\n`;
+    qmd += `# Personnalités nées le ${dateLabel}\n\n`;
+    qmd += `*Données extraites de Wikidata / Wikipédia (fr) le ${today}. `;
+    qmd += `Période : ${startYear}–${endYear}. Total : ${totalCount} personnalités.*\n\n`;
+
+    for (const { year, items } of allResults) {
+      qmd += `## ${year}\n\n`;
+      qmd += `| Nom | Description | Wikipedia | Wikidata |\n`;
+      qmd += `|-----|-------------|-----------|----------|\n`;
+      for (const r of items) {
+        const name    = (r.item?.label       || '').replace(/\|/g, '\\|');
+        const desc    = (r.item?.description || '').replace(/\|/g, '\\|');
+        const article = r.articlename || '';
+        const qid     = r.item?.value || '';
+        const wpLink  = article ? `[Wikipedia](https://fr.wikipedia.org/wiki/${encodeURIComponent(article)})` : '';
+        const wdLink  = qid     ? `[${qid}](https://www.wikidata.org/wiki/${qid})` : '';
+        qmd += `| **${name}** | ${desc} | ${wpLink} | ${wdLink} |\n`;
+      }
+      qmd += `\n`;
+    }
+
+    // Sauvegarde locale + archive serveur
+    downloadBlob(qmd, filename + '.qmd', 'text/plain;charset=utf-8');
+    saveToArchive(filename);
+  }
+
+  // ── Export HTML ──────────────────────────────────────────────────────────
+  async function exportHtml() {
+    const filename = exportFilename();
+    const styles   = [...document.styleSheets]
+      .map(ss => { try { return [...ss.cssRules].map(r => r.cssText).join('\n'); } catch { return ''; } })
+      .join('\n');
+    const body = document.getElementById('results').innerHTML;
+    const { day, month } = state;
+    const dateLabel = `${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}`;
+
+    const html = `<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8">
+<title>Jumeaux — ${dateLabel}</title>
+<style>body{font-family:'Segoe UI',sans-serif;background:#0f172a;color:#e2e8f0;padding:2rem}${styles}</style>
+</head><body>
+<h1 style="color:#38bdf8;margin-bottom:1.5rem">Personnalités nées le ${dateLabel}</h1>
+${body}
+</body></html>`;
+
+    try {
+      const res = await fetch('archives.php?action=save-html', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename, content: html }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        showToast(`HTML enregistré : <a href="${data.url}" target="_blank">${data.filename}</a>`);
+        return;
+      }
+    } catch { /* fallback */ }
+    downloadBlob(html, filename + '.html', 'text/html;charset=utf-8');
+  }
+
+  // ── Export PDF ───────────────────────────────────────────────────────────
+  function exportPdf() { window.print(); }
+
+  // ── Sauvegarde JSON dans /archives ──────────────────────────────────────
+  async function saveToArchive(filename) {
+    const { day, month, startYear, endYear, allResults, errorYears } = state;
+    const totalCount = allResults.reduce((s, y) => s + y.items.length, 0);
+    const payload = {
+      filename,
+      data: {
+        label: `${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}`,
+        day, month, startYear, endYear,
+        count: totalCount,
+        savedAt: new Date().toISOString(),
+        years: allResults,
+        errorYears,
+      },
+    };
+    try {
+      await fetch('archives.php?action=save-json', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } catch { /* silencieux */ }
+  }
+
+  // ── Menu archives ────────────────────────────────────────────────────────
+  function toggleArchives() {
+    const panel = document.getElementById('archives-panel');
+    panel.classList.toggle('hidden');
+    if (!panel.classList.contains('hidden')) loadArchivesList();
+  }
+
+  async function loadArchivesList() {
+    const ul = document.getElementById('archives-list');
+    ul.innerHTML = '<li style="color:#475569;padding:0.5rem 0.8rem;font-size:0.85rem">Chargement…</li>';
+    try {
+      const res  = await fetch('archives.php?action=list');
+      const list = await res.json();
+      if (!list.length) {
+        ul.innerHTML = '<li style="color:#475569;padding:0.5rem 0.8rem;font-size:0.85rem">Aucune archive.</li>';
+        return;
+      }
+      ul.innerHTML = '';
+      for (const a of list) {
+        const li = document.createElement('li');
+        li.className = 'archive-item';
+        li.innerHTML = `
+          <div class="archive-item-title">${escapeHtml(a.label)} — ${a.startYear}→${a.endYear}</div>
+          <div class="archive-item-meta">${a.count} personnalités · enregistré le ${a.saved}</div>`;
+        li.onclick = () => loadArchive(a.filename);
+        ul.appendChild(li);
+      }
+    } catch (e) {
+      ul.innerHTML = `<li style="color:#f87171;padding:0.5rem 0.8rem;font-size:0.85rem">Erreur : ${e.message}</li>`;
+    }
+  }
+
+  async function loadArchive(filename) {
+    document.getElementById('archives-panel').classList.add('hidden');
+    document.getElementById('results').innerHTML = '';
+    document.getElementById('timeline').style.display = 'none';
+    document.getElementById('timeline').innerHTML = '';
+    document.getElementById('year-nav-list').innerHTML = '';
+    document.getElementById('export-bar').style.display = 'none';
+    document.getElementById('retry-errors-bar').style.display = 'none';
+    showStatus('loading', `Chargement de l'archive ${filename}…`);
+
+    try {
+      const res  = await fetch(`archives.php?action=load&file=${encodeURIComponent(filename)}`);
+      const data = await res.json();
+
+      state.day         = data.day;
+      state.month       = data.month;
+      state.startYear   = data.startYear;
+      state.endYear     = data.endYear;
+      state.allResults  = data.years || [];
+      state.errorYears  = data.errorYears || [];
+      state.fromArchive = true;
+
+      document.getElementById('day').value       = data.day;
+      document.getElementById('month').value     = data.month;
+      document.getElementById('startYear').value = data.startYear;
+      document.getElementById('endYear').value   = data.endYear;
+
+      state.allResults.sort((a, b) => b.year - a.year);
+
+      clearStatus();
+      renderTimeline();
+      document.getElementById('export-bar').style.display = 'block';
+      if (state.errorYears.length) {
+        const bar = document.getElementById('retry-errors-bar');
+        bar.querySelector('#retry-errors-count').textContent = state.errorYears.length;
+        bar.style.display = 'block';
+      }
+    } catch (e) {
+      showStatus('error', `Impossible de charger l'archive : ${e.message}`);
+    }
+  }
+
+  // ── Relancer toutes les erreurs (avec pause) ──────────────────────────
+  async function retryAllErrors() {
+    if (!state.errorYears.length) return;
+
+    document.getElementById('retry-errors-bar').style.display = 'none';
+    state.running = true;
+    document.getElementById('searchBtn').disabled = true;
+    document.getElementById('stop-bar').style.display = 'block';
+
+    const years = [...state.errorYears].sort((a, b) => b - a);
+    state.errorYears = [];
+
+    for (let i = 0; i < years.length; i++) {
+      if (!state.running) break;
+      await retrySingleYear(years[i]);
+
+      if (state.running && i < years.length - 1) {
+        for (let s = 60; s > 0 && state.running; s--) {
+          showStatus('loading', `Prochaine reprise dans ${s}s (${years[i + 1]})…`);
+          await new Promise(r => setTimeout(r, 1000));
+        }
+      }
+    }
+
+    finishSearch();
+    if (state.errorYears.length) {
+      const bar = document.getElementById('retry-errors-bar');
+      bar.querySelector('#retry-errors-count').textContent = state.errorYears.length;
+      bar.style.display = 'block';
+    }
+  }
+
+  async function retrySingleYear(year) {
+    const section = document.getElementById(`year-${year}`);
+    if (section) {
+      section.innerHTML = `<div class="year-heading">${year}
+        <span class="year-count"><span class="spinner" style="width:12px;height:12px;border-width:2px"></span></span></div>`;
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    updateNavEntry(year, 'loading');
+    showStatus('loading', `Interrogation de l'année ${year}…`);
+    try {
+      const data    = await proxyFetch(buildQuery(state.day, state.month, year));
+      const results = wdk.simplifySparqlResults(data);
+      if (section) section.remove();
+      if (results.length > 0) appendYearSection(year, state.day, state.month, results, { skipImages: state.fromArchive });
+      else                    appendEmptyYear(year);
+    } catch (err) {
+      if (section) section.remove();
+      appendError(year, err.message);
+    }
+  }
+
+  // ── Utilitaires ──────────────────────────────────────────────────────────
+  function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function showToast(html) {
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;background:#1e293b;border:1px solid #38bdf8;color:#e2e8f0;padding:0.7rem 1.2rem;border-radius:8px;font-size:0.85rem;z-index:500;max-width:320px';
+    t.innerHTML = html;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 5000);
+  }
+
+  function updateDurationWarning() {
+    const start = parseInt(document.getElementById('startYear').value) || 0;
+    const end   = parseInt(document.getElementById('endYear').value)   || 0;
+    const years = Math.abs(start - end) + 1;
+    const el    = document.getElementById('duration-warning');
+    if (years < 2) { el.style.display = 'none'; return; }
+    const totalMin = years;
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    const label = h > 0 ? `${h}h${m > 0 ? String(m).padStart(2,'0') : ''}` : `${m} min`;
+    el.textContent = `⚠ ${years} années → durée estimée : ${label}`;
+    el.style.display = 'block';
+  }
+
+  document.getElementById('startYear').addEventListener('input', updateDurationWarning);
+  document.getElementById('endYear').addEventListener('input',   updateDurationWarning);
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') search(); });
+
+  // ── Paramètres URL ───────────────────────────────────────────────────────
+  (function initFromUrl() {
+    const params  = new URLSearchParams(location.search);
+    const archive = params.get('archive');
+    if (archive) loadArchive(archive);
+  })();
+</script>
+</body>
+</html>
