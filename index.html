@@ -4,625 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mes Jumeaux de Naissance</title>
-  <script src="https://cdn.jsdelivr.net/npm/wikidata-sdk/dist/wikidata-sdk.min.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
-      min-height: 100vh;
-    }
-
-    #top-bar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: #0f172a;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-    }
-
-    header {
-      background: linear-gradient(135deg, #1e3a5f, #2d6a4f);
-      padding: 1rem 2rem;
-      text-align: center;
-    }
-
-    header h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      color: #f0f9ff;
-    }
-
-    header p {
-      margin-top: 0.4rem;
-      color: #94d2bd;
-      font-size: 1rem;
-    }
-
-    .search-section {
-      max-width: 600px;
-      margin: 0.8rem auto;
-      padding: 0 1rem 0.8rem;
-      text-align: center;
-    }
-
-    .date-inputs {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      align-items: flex-end;
-      flex-wrap: wrap;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-
-    label {
-      font-size: 0.85rem;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    select, input[type="number"] {
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #e2e8f0;
-      padding: 0.6rem 1rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
-      min-width: 100px;
-    }
-
-    select:focus, input[type="number"]:focus {
-      border-color: #38bdf8;
-    }
-
-    .btn-search {
-      background: linear-gradient(135deg, #0ea5e9, #2d6a4f);
-      color: white;
-      border: none;
-      padding: 0.7rem 2rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-      font-weight: 600;
-    }
-
-    .btn-search:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn-search:active { transform: translateY(0); }
-    .btn-search:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-    .limit-field {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      color: #94a3b8;
-    }
-
-    .limit-field input {
-      width: 70px;
-      text-align: center;
-    }
-
-    #status {
-      text-align: center;
-      margin: 1rem auto;
-      max-width: 600px;
-      padding: 0 1rem;
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid #334155;
-      border-top-color: #38bdf8;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      vertical-align: middle;
-      margin-right: 0.5rem;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .error {
-      color: #f87171;
-      background: #1e1414;
-      padding: 0.8rem 1.2rem;
-      border-radius: 8px;
-      border-left: 3px solid #f87171;
-    }
-
-    .info {
-      color: #94d2bd;
-    }
-
-    #results {
-      max-width: 900px;
-      margin: 0 auto 3rem;
-      padding: 0 1rem;
-    }
-
-    .results-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid #1e293b;
-    }
-
-    .results-count {
-      color: #38bdf8;
-      font-weight: 600;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1rem;
-    }
-
-    .card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 1.2rem;
-      transition: transform 0.15s, box-shadow 0.15s;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-      border-color: #38bdf8;
-    }
-
-    .card-name {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: #f0f9ff;
-    }
-
-    .card-date {
-      font-size: 0.85rem;
-      color: #94a3b8;
-    }
-
-    .card-date span {
-      color: #38bdf8;
-      font-weight: 500;
-    }
-
-    .card-link {
-      margin-top: auto;
-      display: inline-block;
-      font-size: 0.8rem;
-      color: #2d6a4f;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .card-link:hover { color: #52b788; }
-
-    .tag-year {
-      display: inline-block;
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 999px;
-      padding: 0.15rem 0.6rem;
-      font-size: 0.75rem;
-      color: #94a3b8;
-    }
-
-    #pagination {
-      max-width: 900px;
-      margin: 1.5rem auto 3rem;
-      padding: 0 1rem;
-    }
-
-    .pager {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      flex-wrap: wrap;
-    }
-
-    .pager-nav, .pager-num {
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #e2e8f0;
-      padding: 0.45rem 0.9rem;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
-    }
-
-    .pager-nav:hover:not(:disabled), .pager-num:hover {
-      background: #334155;
-      border-color: #38bdf8;
-    }
-
-    .pager-nav:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-    }
-
-    .pager-num.active {
-      background: #0ea5e9;
-      border-color: #0ea5e9;
-      color: #fff;
-      font-weight: 700;
-      cursor: default;
-    }
-
-    .btn-stop {
-      background: #7f1d1d;
-      border: 1px solid #ef4444;
-      color: #fca5a5;
-      padding: 0.5rem 1.8rem;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .btn-stop:hover { background: #991b1b; }
-
-    .year-section {
-      margin-bottom: 2rem;
-    }
-
-    .year-heading {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #38bdf8;
-      margin-bottom: 0.8rem;
-      padding-bottom: 0.4rem;
-      border-bottom: 1px solid #1e293b;
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-    }
-
-    .year-count {
-      font-size: 0.8rem;
-      font-weight: 400;
-      color: #64748b;
-    }
-
-    .card-desc {
-      font-size: 0.8rem;
-      color: #64748b;
-      font-style: italic;
-    }
-
-    .btn-export {
-      background: #1e3a5f;
-      border: 1px solid #38bdf8;
-      color: #38bdf8;
-      padding: 0.5rem 1.4rem;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .btn-export:hover { background: #1e4976; }
-
-    /* ── Menu flottant ── */
-    .nav-toggle {
-      position: fixed;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 200;
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #94a3b8;
-      width: 2.2rem;
-      height: 2.2rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-    }
-    .nav-toggle:hover { background: #334155; color: #e2e8f0; }
-
-    .year-nav {
-      position: fixed;
-      left: 0;
-      top: 0;
-      height: 100vh;
-      width: 160px;
-      background: #0f172a;
-      border-right: 1px solid #1e293b;
-      z-index: 199;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.25s ease;
-    }
-    .year-nav.hidden { transform: translateX(-160px); }
-
-    .year-nav-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.7rem 0.8rem;
-      border-bottom: 1px solid #1e293b;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      flex-shrink: 0;
-    }
-    .year-nav-close {
-      background: none;
-      border: none;
-      color: #64748b;
-      cursor: pointer;
-      font-size: 0.9rem;
-      line-height: 1;
-      padding: 0.1rem 0.3rem;
-    }
-    .year-nav-close:hover { color: #e2e8f0; }
-
-    #year-nav-list {
-      list-style: none;
-      overflow-y: auto;
-      flex: 1;
-      padding: 0.4rem 0;
-    }
-    #year-nav-list::-webkit-scrollbar { width: 4px; }
-    #year-nav-list::-webkit-scrollbar-track { background: transparent; }
-    #year-nav-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
-
-    .nav-year-item a {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.3rem 0.8rem;
-      font-size: 0.82rem;
-      color: #94a3b8;
-      text-decoration: none;
-      transition: background 0.1s, color 0.1s;
-      border-left: 3px solid transparent;
-    }
-    .nav-year-item a:hover { background: #1e293b; color: #e2e8f0; }
-    .nav-year-item.has-results a { color: #38bdf8; border-left-color: #38bdf8; }
-    .nav-year-item.is-empty  a { color: #475569; border-left-color: #334155; }
-    .nav-year-item.has-error a { color: #f87171; border-left-color: #f87171; }
-    .nav-year-item .nav-dot  { font-size: 0.6rem; flex-shrink: 0; }
-
-    /* ── Bouton archives dans le header ── */
-    .btn-archives {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #f0f9ff;
-      padding: 0.4rem 1rem;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .btn-archives:hover { background: rgba(255,255,255,0.15); }
-    header { position: relative; }
-
-    /* ── Panneau archives ── */
-    .archives-panel {
-      position: fixed;
-      top: 0; right: 0;
-      height: 100vh;
-      width: 300px;
-      background: #0f172a;
-      border-left: 1px solid #1e293b;
-      z-index: 300;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.25s ease;
-    }
-    .archives-panel.hidden { transform: translateX(300px); }
-
-    .archives-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.8rem 1rem;
-      border-bottom: 1px solid #1e293b;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      flex-shrink: 0;
-    }
-    .archives-header button {
-      background: none; border: none; color: #64748b;
-      cursor: pointer; font-size: 1rem;
-    }
-    .archives-header button:hover { color: #e2e8f0; }
-
-    #archives-list {
-      list-style: none;
-      overflow-y: auto;
-      flex: 1;
-      padding: 0.5rem 0;
-    }
-    #archives-list::-webkit-scrollbar { width: 4px; }
-    #archives-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
-
-    .archive-item {
-      padding: 0.6rem 1rem;
-      border-bottom: 1px solid #1e293b;
-      cursor: pointer;
-      transition: background 0.1s;
-    }
-    .archive-item:hover { background: #1e293b; }
-    .archive-item-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #e2e8f0;
-    }
-    .archive-item-meta {
-      font-size: 0.75rem;
-      color: #475569;
-      margin-top: 0.2rem;
-    }
-
-    .retry-errors-banner {
-      display: inline-flex;
-      align-items: center;
-      gap: 1rem;
-      background: #1c1010;
-      border: 1px solid #7f1d1d;
-      color: #fca5a5;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      font-size: 0.9rem;
-    }
-
-    #duration-warning {
-      text-align: center;
-      font-size: 0.82rem;
-      color: #fbbf24;
-      background: #1c1a0a;
-      border-top: 1px solid #78350f;
-      padding: 0.35rem 1rem;
-    }
-
-    /* ── Timeline ── */
-    #timeline {
-      display: none;
-      max-width: 900px;
-      margin: 1rem auto 2rem;
-      padding: 0 1rem;
-    }
-
-    .tl-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.8rem;
-      padding-bottom: 0.4rem;
-      border-bottom: 1px solid #1e293b;
-      font-size: 0.85rem;
-      color: #64748b;
-    }
-
-    .tl-row {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      padding: 0.2rem 0.4rem;
-      border-radius: 6px;
-      transition: background 0.1s;
-    }
-    .tl-row.clickable { cursor: pointer; }
-    .tl-row.clickable:hover { background: #1e293b; }
-    .tl-row.tl-active { background: #1e3a5f; }
-
-    .tl-year {
-      width: 48px;
-      text-align: right;
-      font-size: 0.82rem;
-      color: #94a3b8;
-      flex-shrink: 0;
-      font-variant-numeric: tabular-nums;
-    }
-    .tl-row.tl-active .tl-year { color: #38bdf8; font-weight: 600; }
-
-    .tl-bar-wrap {
-      flex: 1;
-      height: 18px;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .tl-bar {
-      height: 14px;
-      background: linear-gradient(90deg, #0ea5e9 0%, #2d6a4f 100%);
-      border-radius: 3px;
-      display: flex;
-      align-items: center;
-      min-width: 2px;
-      transition: width 0.4s ease;
-    }
-    .tl-row.tl-active .tl-bar { background: linear-gradient(90deg, #38bdf8, #52b788); }
-
-    .tl-count {
-      font-size: 0.7rem;
-      color: #e2e8f0;
-      padding: 0 0.35rem;
-      white-space: nowrap;
-    }
-
-    .tl-empty { font-size: 0.75rem; color: #334155; font-style: italic; }
-    .tl-error { font-size: 0.75rem; color: #f87171; }
-    .tl-rendered { font-size: 0.7rem; color: #52b788; margin-left: 0.3rem; }
-
-    .btn-load-img {
-      background: #0f172a;
-      border: 1px solid #334155;
-      color: #94a3b8;
-      padding: 0.2rem 0.7rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-      margin-left: auto;
-    }
-    .btn-load-img:hover { background: #1e293b; color: #38bdf8; border-color: #38bdf8; }
-    .btn-load-img:disabled { opacity: 0.5; cursor: default; }
-
-    .btn-retry {
-      background: #1e293b;
-      border: 1px solid #f87171;
-      color: #f87171;
-      padding: 0.3rem 0.9rem;
-      border-radius: 6px;
-      font-size: 0.82rem;
-      cursor: pointer;
-      transition: background 0.15s;
-      white-space: nowrap;
-    }
-    .btn-retry:hover { background: #2d1f1f; }
-
-    @media print {
-      #top-bar, #status, #stop-bar, #export-bar, #retry-errors-bar, #timeline, .year-nav, .nav-toggle { display: none !important; }
-      body { background: #fff; color: #000; font-family: Georgia, serif; }
-      #results { max-width: 100%; padding: 0; margin: 0; }
-      .year-heading { font-size: 1.2rem; color: #000; border-bottom: 2px solid #000; margin-bottom: 0.5rem; page-break-after: avoid; }
-      .year-count { color: #555; }
-      .year-section { page-break-inside: avoid; margin-bottom: 1.5rem; }
-      .grid { display: block; columns: 2; column-gap: 1rem; }
-      .card { break-inside: avoid; background: none; border: 1px solid #ccc; border-radius: 4px; padding: 0.5rem; margin-bottom: 0.5rem; box-shadow: none; }
-      .card:hover { transform: none; box-shadow: none; }
-      .card-name { font-size: 0.95rem; font-weight: bold; color: #000; }
-      .card-desc { color: #444; }
-      .card-link { color: #00519e; font-size: 0.75rem; }
-      img { max-width: 60px; max-height: 60px; }
-    }
-  </style>
+  <script src="assets/wikidata-sdk.min.js"></script>
+  <script src="assets/d3.v7.min.js"></script>
+  <script src="assets/cal-heatmap.min.js"></script>
+  <script src="assets/popper.min.js"></script>
+  <script src="assets/Tooltip.min.js"></script>
+  <link rel="stylesheet" href="assets/cal-heatmap.css">
+  <link rel="stylesheet" href="assets/main.css">
 </head>
 <body>
 
@@ -687,6 +75,16 @@
   <button class="btn-export" onclick="exportHtml()" style="margin-left:0.5rem">💾 HTML</button>
   <button class="btn-export" onclick="exportPdf()"  style="margin-left:0.5rem">🖨 PDF</button>
 </div>
+<div id="heatmap-section">
+  <div class="heatmap-header">
+    <span id="heatmap-label"></span>
+    <div class="heatmap-nav">
+      <button class="btn-heatmap-nav" onclick="calHeatmapPrev()">← Précédent</button>
+      <button class="btn-heatmap-nav" onclick="calHeatmapNext()">Suivant →</button>
+    </div>
+  </div>
+  <div id="cal-heatmap"></div>
+</div>
 <div id="timeline"></div>
 <div id="results"></div>
 
@@ -709,10 +107,13 @@
 </nav>
 <button id="nav-toggle" class="nav-toggle" onclick="toggleNav()" title="Navigation par année">☰</button>
 
+<div id="tooltip"></div>
+
+
 <script>
   const MONTHS = ['','Janvier','Février','Mars','Avril','Mai','Juin',
     'Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-
+  const tooltip = d3.select("#tooltip")
   let state = {
     running: false, allResults: [], errorYears: [], yearItems: {},
     day: 17, month: 6, startYear: 2025, endYear: 1800,
@@ -775,6 +176,7 @@ WHERE {
     document.getElementById('stop-bar').style.display = 'block';
     document.getElementById('export-bar').style.display = 'none';
     document.getElementById('results').innerHTML = '';
+    document.getElementById('heatmap-section').style.display = 'none';
     document.getElementById('timeline').style.display = 'none';
     document.getElementById('timeline').innerHTML = '';
     document.getElementById('year-nav-list').innerHTML = '';
@@ -1240,6 +642,7 @@ ${body}
   async function loadArchive(filename) {
     document.getElementById('archives-panel').classList.add('hidden');
     document.getElementById('results').innerHTML = '';
+    document.getElementById('heatmap-section').style.display = 'none';
     document.getElementById('timeline').style.display = 'none';
     document.getElementById('timeline').innerHTML = '';
     document.getElementById('year-nav-list').innerHTML = '';
@@ -1255,7 +658,18 @@ ${body}
       state.month       = data.month;
       state.startYear   = data.startYear;
       state.endYear     = data.endYear;
-      state.allResults  = data.years || [];
+      state.allResults  = [];
+      //ajoute les années abscentes
+      data.years.sort((a, b) => b.year - a.year);
+      let prevYear = state.startYear+1;
+      data.years.forEach(y=>{
+        for (let index = prevYear; y.year < index; index--) {
+          state.allResults.push({year:index,items:[]});
+        }
+        state.allResults.push(y);
+        prevYear=y.year-1;
+      });
+
       state.errorYears  = data.errorYears || [];
       state.fromArchive = true;
 
@@ -1264,10 +678,8 @@ ${body}
       document.getElementById('startYear').value = data.startYear;
       document.getElementById('endYear').value   = data.endYear;
 
-      state.allResults.sort((a, b) => b.year - a.year);
-
       clearStatus();
-      renderTimeline();
+      renderCalHeatmap();
       document.getElementById('export-bar').style.display = 'block';
       if (state.errorYears.length) {
         const bar = document.getElementById('retry-errors-bar');
@@ -1368,12 +780,219 @@ ${body}
   document.getElementById('endYear').addEventListener('input',   updateDurationWarning);
   document.addEventListener('keydown', e => { if (e.key === 'Enter') search(); });
 
+  // ── Cal-HeatMap (affichage archives) ─────────────────────────────────────
+  let _cal = null;
+
+  function renderCalHeatmap() {
+    const { allResults, errorYears, day, month } = state;
+    const section = document.getElementById('heatmap-section');
+    section.style.display = 'block';
+    document.getElementById('cal-heatmap').innerHTML = '';
+
+    const years = allResults.map(r => r.year).concat(errorYears);
+    const maxYear = Math.max(...years);
+    const minYear = Math.min(...years);
+    const maxItems = d3.max(allResults, (d) => d.items.length);
+    const totalYears = maxYear - minYear + 1;
+    const totalPersons = allResults.reduce((s, r) => s + r.items.length, 0);
+    const color = d3.scaleSequential([0, maxItems],d3.interpolateTurbo);
+    const groupNbItems = Array.from(d3.group(allResults, (d) => d.items.length)).sort((a, b) => a[0] - b[0]);
+
+    document.getElementById('heatmap-label').textContent =
+      `${totalYears} années · ${totalPersons} personnalités — cliquez sur une année pour afficher`;
+    
+    //génère le tableau des années
+    const legende = d3.select('#cal-heatmap').append("div").attr("id","yearsLegend");
+    setLegend(groupNbItems, legende, color);
+    /*
+    legende.selectAll("div").data(groupNbItems).enter().append("div").attr("class","yearBlock yearBlockButton")
+      .style("background-color",d=>{
+        return color(d[0]);
+      })
+    */
+    const yearsStat = d3.select('#cal-heatmap').append("div").attr("id","yearsStat");
+    const yearsDiv = yearsStat.selectAll('div').data(allResults).enter().append("div")
+      .attr("class","yearBlock");
+    yearsDiv.append("div").attr("class","yearBlockButton")
+      .style("background-color",d=>{
+        return color(d.items.length)
+      })
+      .on("mouseenter",(e,d)=>{
+        tooltip
+          .style("display","block")
+          .style("left",e.clientX+"px")
+          .style("top",(e.clientY-20)+"px")
+          .style("top",(e.clientY-20)+"px")
+          .html(d.year+" -> "+d.items.length+" p.");
+      })
+      .on("mouseleave",(e,d)=>{
+        tooltip.style("display","none");
+      })
+      .on("click",(e,d)=>{
+          console.log(d);
+          showYearFromTimeline(d.year);
+        });
+
+      ;//.style("background-color","red");
+    /*
+    yearsDiv.append("div").html(d=>{
+        return d.year;
+      });
+    */
+
+
+    /*Génère le HeatMap
+    // Build data: place the yearly count on the exact birthday date of that year
+    const data = allResults.map(({ year, items }) => ({
+      date: new Date(year, month - 1, day),
+      value: items.length,
+    }));
+
+
+    if (_cal) { try { _cal.destroy(); } catch {} _cal = null; }
+
+    _cal = new CalHeatmap();
+    _cal.paint(
+      {
+        verticalOrientation: false, 
+        itemSelector: '#cal-heatmap',
+        data: {
+          source: data,
+          x: 'date',
+          y: 'value',
+          defaultValue: null,
+        },
+        date: { start: new Date(maxYear, 0, 1) },
+        range: Math.min(20, totalYears),
+        domain: {
+          type: 'year',
+          //gutter: 6,
+          //label: { text: 'YYYY', position: 'left', width: 46, textAlign: 'end' },
+        },
+        subDomain: {
+          type: 'month',
+          radius: 1,
+          width: 3,
+          height: 3,
+          gutter: 1,
+        },
+        scale: {
+          color: {
+            type: 'threshold',
+            range: ['#0f172a', '#1e3a5f', '#0ea5e9', '#38bdf8', '#7dd3fc'],
+            domain: [0, 1, 5, 15],
+          },
+        },
+      },
+      [
+        [
+          Tooltip,
+          {
+            text: (timestamp, value) => {
+              if (!timestamp) return '';
+              const year = new Date(timestamp).getFullYear();
+              const dd = String(day).padStart(2, '0');
+              const mm = String(month).padStart(2, '0');
+              if (value == null) return `${dd}/${mm}/${year} — aucune donnée`;
+              return `${dd}/${mm}/${year} — ${value} personnalité${value > 1 ? 's' : ''}`;
+            },
+          },
+        ],
+      ]
+    );
+
+    _cal.on('click', (_event, timestamp, value) => {
+      if (value == null || value === 0) return;
+      const year = new Date(timestamp).getFullYear();
+      showYearFromTimeline(year);
+    });
+    */
+  }
+
+  function calHeatmapPrev() { _cal?.previous(); }
+  function calHeatmapNext() { _cal?.next(); }
+
   // ── Paramètres URL ───────────────────────────────────────────────────────
   (function initFromUrl() {
     const params  = new URLSearchParams(location.search);
     const archive = params.get('archive');
     if (archive) loadArchive(archive);
   })();
+
+
+  function setLegend(data, cont, color){
+
+    const width = 900;
+    const height = 200;
+    const marginTop = 20;
+    const marginRight = 20;
+    const marginBottom = 30;
+    const marginLeft = 40;
+    // Declare the x (horizontal position) scale.
+    const extentX = d3.extent(data, (d) => d[0]);
+    const extentY = d3.extent(data, (d) => d[1].length);
+
+    const x = d3.scaleLinear()
+        .domain(extentX)
+        .range([marginLeft, width - marginRight]);
+
+    // Declare the y (vertical position) scale.
+    const y = d3.scaleSymlog()
+        .domain(extentY)
+        .range([height - marginBottom, marginTop]);
+
+    // Create the SVG container.
+    const svg = cont.append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("viewBox", [0, 0, width, height])
+        .attr("style", "max-width: 100%; height: auto;");
+
+    // Add a rect for each bin.
+    svg.append("g")
+      .selectAll()
+      .data(data)
+      .join("rect")
+        .attr("x", (d) => {
+          return x(d[0]);
+        })
+        .attr("width", (d) => width/extentX[1])
+        .attr("y", (d) => {
+          return y(d[1].length);
+        })
+        .attr("height", (d) => {
+          return y(extentY[0]) - y(d[1].length);
+        })
+        .attr("fill", d=>color(d[0]))
+        .on("click",(e,d)=>{
+          console.log(d);
+        });
+
+
+    // Add the x-axis and label.
+    svg.append("g")
+        .attr("transform", `translate(0,${height - marginBottom})`)
+        .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0))
+        .call((g) => g.append("text")
+            .attr("x", width)
+            .attr("y", marginBottom)
+            .attr("fill", "currentColor")
+            .attr("text-anchor", "end")
+            .text("Nb de personne dans l'année"));
+
+    // Add the y-axis and label, and remove the domain line.
+    svg.append("g")
+        .attr("transform", `translate(${marginLeft},0)`)
+        .call(d3.axisLeft(y).ticks(height / 40))
+        //.call((g) => g.select(".domain").remove())
+        .call((g) => g.append("text")
+            .attr("x", -marginLeft)
+            .attr("y", 10)
+            .attr("fill", "currentColor")
+            .attr("text-anchor", "start")
+            .text("Nombre d'année"));   
+  }
+
 </script>
 </body>
 </html>
