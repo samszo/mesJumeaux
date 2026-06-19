@@ -149,6 +149,11 @@ WHERE {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body,
     });
+    state.cache=false;
+    for (var pair of response.headers.entries()) { // accessing the entries
+      if (pair[0] === 'x-cache' && pair[1] === 'HIT')state.cache=true;
+    }
+
     if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
     return response.json();
   }
@@ -201,7 +206,7 @@ WHERE {
     }
 
     // Pause d'une minute entre chaque requête pour respecter les limites de l'API
-    if (state.running && year - 1 >= endYear) {
+    if (!state.cache && state.running && year - 1 >= endYear) {
       for (let s = 61; s > 0 && state.running; s--) {
         showStatus('loading', `Prochaine requête dans ${s}s (année ${year - 1})…`);
         await new Promise(r => setTimeout(r, 1000));
@@ -443,7 +448,18 @@ WHERE {
     if (entry.items.length) {
       appendYearSection(year, state.day, state.month, entry.items, { skipImages: true });
     } else {
-      appendEmptyYear(year);
+      const container = document.getElementById('results');
+      const section = document.createElement('div');
+      section.className = 'year-section';
+      section.id = `year-${year}`;
+      section.innerHTML = `
+        <div class="year-heading">${year} <span class="year-count">aucun résultat</span></div>
+        <div style="display:flex;align-items:center;gap:1rem;padding:0.5rem 0">
+          <p style="color:#475569;font-size:0.85rem;font-style:italic;margin:0">Pas de personne née à cette date.</p>
+          <button class="btn-retry" onclick="retryYear(${year})">↩ Recharger</button>
+        </div>`;
+      container.appendChild(section);
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     // Marquer comme affiché dans la timeline

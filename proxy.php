@@ -39,7 +39,6 @@ curl_setopt($req, CURLOPT_TIMEOUT,        30);
 $body   = curl_exec($req);
 $status = curl_getinfo($req, CURLINFO_HTTP_CODE);
 $error  = curl_error($req);
-curl_close($req);
 
 if ($error) {
     http_response_code(502);
