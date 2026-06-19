@@ -57,8 +57,6 @@
   </div>
   <div id="duration-warning"></div>
 </div>
-</div><!-- /#top-bar -->
-
 <div id="load-count" style="display:none;text-align:center;color:#64748b;font-size:0.85rem;margin:0.5rem 0"></div>
 <div id="status"></div>
 <div id="stop-bar" style="display:none;text-align:center;margin-bottom:1rem">
@@ -78,7 +76,7 @@
 <div id="heatmap-section">
   <div class="heatmap-header">
     <span id="heatmap-label"></span>
-    <div class="heatmap-nav">
+    <div class="heatmap-nav" style="display: none;">
       <button class="btn-heatmap-nav" onclick="calHeatmapPrev()">← Précédent</button>
       <button class="btn-heatmap-nav" onclick="calHeatmapNext()">Suivant →</button>
     </div>
@@ -86,6 +84,9 @@
   <div id="cal-heatmap"></div>
 </div>
 <div id="timeline"></div>
+
+</div><!-- /#top-bar -->
+
 <div id="results"></div>
 
 <!-- Menu archives -->
@@ -114,6 +115,31 @@
   const MONTHS = ['','Janvier','Février','Mars','Avril','Mai','Juin',
     'Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
   const tooltip = d3.select("#tooltip")
+
+  // ── Rate-limiter images : 10 requêtes / minute ────────────────────────
+  const imageRateLimiter = {
+    INTERVAL: 6000,   // ms entre chaque requête (60 000 / 10)
+    queue: [],
+    timer: null,
+    enqueue(entityId, imgEl) {
+      if (!imgEl || imgEl.dataset.queued) return;
+      imgEl.dataset.queued = '1';
+      this.queue.push({ entityId, imgEl });
+      if (!this.timer) this._next();
+    },
+    _next() {
+      if (!this.queue.length) { this.timer = null; return; }
+      const { entityId, imgEl } = this.queue.shift();
+      getP18Image(entityId).then(url => {
+        if (url && imgEl) { imgEl.src = url; imgEl.onload = () => imgEl.classList.add('loaded'); }
+      }).finally(() => {
+        this.timer = setTimeout(() => this._next(), this.INTERVAL);
+      });
+    },
+    // Taille actuelle pour affichage
+    get pending() { return this.queue.length; },
+  };
+
   let state = {
     running: false, allResults: [], errorYears: [], yearItems: {},
     day: 17, month: 6, startYear: 2025, endYear: 1800,
@@ -205,6 +231,9 @@ WHERE {
       appendError(year, err.message);
     }
 
+    // Sauvegarde incrémentale (fire & forget)
+    saveToArchive(archiveFilename());
+
     // Pause d'une minute entre chaque requête pour respecter les limites de l'API
     if (!state.cache && state.running && year - 1 >= endYear) {
       for (let s = 70; s > 0 && state.running; s--) {
@@ -267,18 +296,11 @@ WHERE {
     document.getElementById('export-bar').style.display = 'block';
     addNavEntry(year, 'has-results', results.length);
 
-    // Async image fetch — skipped on archive load
+    // Async image fetch via rate-limiter — skipped on archive load
     if (!skipImages) {
       for (const r of results) {
         const imgEl = document.getElementById(r.item.value + '-img');
-        if (imgEl) {
-          imgEl.classList.remove('loaded');
-          getP18Image(r.item.value).then(url => {
-            if (!url) return;
-            imgEl.src = url;
-            imgEl.onload = () => imgEl.classList.add('loaded');
-          });
-        }
+        if (imgEl) imageRateLimiter.enqueue(r.item.value, imgEl);
       }
     }
 
@@ -471,19 +493,26 @@ WHERE {
     }
   }
 
-  async function loadYearImages(year) {
+  function loadYearImages(year) {
     const results = state.yearItems[year];
     if (!results) return;
     const btn = document.querySelector(`#year-${year} .btn-load-img`);
-    if (btn) { btn.disabled = true; btn.textContent = '⏳ Chargement…'; }
+    if (btn) { btn.disabled = true; }
+
+    let queued = 0;
     for (const r of results) {
       const imgEl = document.getElementById(r.item.value + '-img');
-      if (imgEl && !imgEl.src) {
-        const url = await getP18Image(r.item.value);
-        if (url) { imgEl.src = url; imgEl.onload = () => imgEl.classList.add('loaded'); }
+      if (imgEl && !imgEl.src && !imgEl.dataset.queued) {
+        imageRateLimiter.enqueue(r.item.value, imgEl);
+        queued++;
       }
     }
-    if (btn) { btn.textContent = '✓ Images chargées'; }
+
+    if (btn) {
+      btn.textContent = queued > 0
+        ? `⏳ ${queued} en file (≈${Math.ceil(queued * imageRateLimiter.INTERVAL / 60000)} min)`
+        : '✓ Déjà chargées';
+    }
   }
 
   function toggleNav() {
@@ -517,13 +546,18 @@ WHERE {
   }
 
   // ── Nom de fichier commun ────────────────────────────────────────────────
+  // Nom stable pour l'archive en cours (basé sur le formulaire, pas sur allResults)
+  function archiveFilename() {
+    const { day, month, startYear, endYear } = state;
+    return `jumeaux-${pad(day)}-${pad(month)}_${startYear}-${endYear}`;
+  }
+
+  // Nom pour les exports ponctuels (reflète la plage réellement couverte)
   function exportFilename() {
     const { day, month, allResults, startYear, endYear } = state;
-    const dd = String(day).padStart(2, '0');
-    const mm = String(month).padStart(2, '0');
-    const yr1 = allResults.length ? allResults[0].year       : startYear;
-    const yr2 = allResults.length ? allResults.at(-1).year   : endYear;
-    return `jumeaux-${dd}-${mm}_${yr1}-${yr2}`;
+    const yr1 = allResults.length ? allResults[0].year     : startYear;
+    const yr2 = allResults.length ? allResults.at(-1).year : endYear;
+    return `jumeaux-${pad(day)}-${pad(month)}_${yr1}-${yr2}`;
   }
 
   // ── Export Quarto Markdown ───────────────────────────────────────────────
