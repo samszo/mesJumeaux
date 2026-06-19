@@ -207,7 +207,7 @@ WHERE {
 
     // Pause d'une minute entre chaque requête pour respecter les limites de l'API
     if (!state.cache && state.running && year - 1 >= endYear) {
-      for (let s = 61; s > 0 && state.running; s--) {
+      for (let s = 70; s > 0 && state.running; s--) {
         showStatus('loading', `Prochaine requête dans ${s}s (année ${year - 1})…`);
         await new Promise(r => setTimeout(r, 1000));
       }
