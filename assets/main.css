@@ -19,7 +19,44 @@
       background: linear-gradient(135deg, #1e3a5f, #2d6a4f);
       padding: 1rem 2rem;
       text-align: center;
+      position: relative;
     }
+
+    .header-actions {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.4rem;
+    }
+
+    .header-dropdown {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      background: #1e3a5f;
+      border: 1px solid #2d6a4f;
+      border-radius: 8px;
+      padding: 0.4rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .header-dropdown.hidden { display: none; }
+
+    .btn-export {
+      background: transparent;
+      border: 1px solid #94d2bd;
+      color: #f0f9ff;
+      padding: 0.35rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .btn-export:hover { background: #2d6a4f; }
 
     header h1 {
       font-size: 2.2rem;

@@ -18,7 +18,15 @@
 <header>
   <h1>Mes Jumeaux de Naissance</h1>
   <p>Découvrez les personnalités nées le même jour que vous</p>
-  <button class="btn-archives" onclick="toggleArchives()">📂 Archives</button>
+  <div class="header-actions">
+    <div id="export-menu" style="margin-top: 50px;margin-right: 100px;" class="header-dropdown hidden">
+      <button class="btn-export" onclick="exportQmd()">⬇ Quarto (.qmd)</button>
+      <button class="btn-export" onclick="exportHtml()">💾 HTML</button>
+      <button class="btn-export" onclick="exportPdf()">🖨 PDF</button>
+    </div>
+    <button class="btn-archives" style="right: 10em;" id="exportMenuBtn" onclick="toggleExportMenu()" style="display:none">⬇ Exporter</button>
+    <button class="btn-archives" onclick="toggleArchives()">📂 Archives</button>
+  </div>
 </header>
 
 <div class="search-section">
@@ -70,11 +78,6 @@
 </div>
 
 </div><!-- /#top-bar -->
-<div id="export-bar" style="display:none;text-align:center;margin-bottom:1.5rem">
-  <button class="btn-export" onclick="exportQmd()">⬇ Quarto (.qmd)</button>
-  <button class="btn-export" onclick="exportHtml()" style="margin-left:0.5rem">💾 HTML</button>
-  <button class="btn-export" onclick="exportPdf()"  style="margin-left:0.5rem">🖨 PDF</button>
-</div>
 <div id="heatmap-section">
   <div class="heatmap-header">
     <span id="heatmap-label"></span>
@@ -205,7 +208,7 @@ WHERE {
     state.endYear     = endYear;
     document.getElementById('searchBtn').disabled = true;
     document.getElementById('stop-bar').style.display = 'block';
-    document.getElementById('export-bar').style.display = 'none';
+    document.getElementById('exportMenuBtn').style.display = 'none';
     document.getElementById('results').innerHTML = '';
     document.getElementById('heatmap-section').style.display = 'none';
     document.getElementById('timeline').style.display = 'none';
@@ -293,7 +296,7 @@ WHERE {
 
     // Collecte pour l'export + nav
     state.allResults.push({ year, items: results });
-    document.getElementById('export-bar').style.display = 'block';
+    document.getElementById('exportMenuBtn').style.display = 'inline-block';
     addNavEntry(year, 'has-results', results.length);
 
     // Async image fetch via rate-limiter — skipped on archive load
@@ -658,6 +661,10 @@ ${body}
   }
 
   // ── Menu archives ────────────────────────────────────────────────────────
+  function toggleExportMenu() {
+    document.getElementById('export-menu').classList.toggle('hidden');
+  }
+
   function toggleArchives() {
     const panel = document.getElementById('archives-panel');
     panel.classList.toggle('hidden');
@@ -696,7 +703,7 @@ ${body}
     document.getElementById('timeline').style.display = 'none';
     document.getElementById('timeline').innerHTML = '';
     document.getElementById('year-nav-list').innerHTML = '';
-    document.getElementById('export-bar').style.display = 'none';
+    document.getElementById('exportMenuBtn').style.display = 'none';
     document.getElementById('retry-errors-bar').style.display = 'none';
     showStatus('loading', `Chargement de l'archive ${filename}…`);
 
@@ -730,7 +737,7 @@ ${body}
 
       clearStatus();
       renderCalHeatmap();
-      document.getElementById('export-bar').style.display = 'block';
+      document.getElementById('exportMenuBtn').style.display = 'inline-block';
       if (state.errorYears.length) {
         const bar = document.getElementById('retry-errors-bar');
         bar.querySelector('#retry-errors-count').textContent = state.errorYears.length;
@@ -973,7 +980,7 @@ ${body}
   function setLegend(data, cont, color){
 
     const width = 900;
-    const height = 200;
+    const height = 100;
     const marginTop = 20;
     const marginRight = 20;
     const marginBottom = 30;
