@@ -973,7 +973,19 @@ ${body}
   (function initFromUrl() {
     const params  = new URLSearchParams(location.search);
     const archive = params.get('archive');
-    if (archive) loadArchive(archive);
+    if (archive) { loadArchive(archive); return; }
+
+    const pDay   = params.get('day');
+    const pMonth = params.get('month');
+    const pStart = params.get('startYear');
+    const pEnd   = params.get('endYear');
+
+    if (pDay)   { document.getElementById('day').value       = pDay;   }
+    if (pMonth) { document.getElementById('month').value     = pMonth; }
+    if (pStart) { document.getElementById('startYear').value = pStart; }
+    if (pEnd)   { document.getElementById('endYear').value   = pEnd;   }
+
+    if (pDay || pMonth || pStart || pEnd) search();
   })();
 
 
