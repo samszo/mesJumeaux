@@ -146,6 +146,8 @@
       max-width: 900px;
       margin: 0 auto 3rem;
       padding: 0 1rem;
+      overflow-y: scroll;
+      height: 300px;
     }
 
     .results-header {
