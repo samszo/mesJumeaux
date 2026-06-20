@@ -1,0 +1,143 @@
+{
+  "head" : {
+    "vars" : [ "item", "articlename", "itemLabel", "itemDescription" ]
+  },
+  "results" : {
+    "bindings" : [ {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q1452417"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Fred Liewehr"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Austrian actor (1909–1993)"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Fred Liewehr"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q272189"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Régine Pernoud"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "French archivist and historian (1909–1998)"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Régine Pernoud"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q3288663"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Marcel Bergé"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Marcel Bergé"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q376563"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Ralph E. Winters"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Canadian film editor (1909-2004)"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Ralph E. Winters"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q982742"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Henri Lemoine"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "French cyclist (1909–1991)"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Henri Lemoine"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q3507793"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Karel Höger"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Czech theatre, film, television and radio actor, dubber and university teacher (1909–1977)"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Karel Höger"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q24686373"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Léon Boesinger"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "French association football player (1909-1975)"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Léon Boesinger"
+      }
+    } ]
+  }
+}

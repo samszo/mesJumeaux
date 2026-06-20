@@ -1,0 +1,228 @@
+{
+  "head" : {
+    "vars" : [ "item", "articlename", "itemLabel", "itemDescription" ]
+  },
+  "results" : {
+    "bindings" : [ {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q436819"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Charmaine Howell"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "athletics competitor"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Charmaine Howell"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q439341"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Mark Clattenburg"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "English football referee"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Mark Clattenburg"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q743796"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Landon Wilson"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "American ice hockey player"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Landon Wilson"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q754857"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Annika Olsen"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Faroese politician"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Annika Olsen"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q3056607"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Erika de la Vega"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Venezuelan presenter and broadcaster"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Erika de la Vega"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q3198537"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Komi Dossouvi"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Togolese bicycle racer"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Komi Dossouvi"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q3383678"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Pierre Alexandre Tremblay"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Canadian musician"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Pierre Alexandre Tremblay"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q4008550"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Vanessa Nygaard"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "American basketball player-coach"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Vanessa Nygaard"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q5549487"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Osvaldo Daicich"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Argentinian film director"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Osvaldo Daicich"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q767739"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Marta Vilajosana"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Spanish racing cyclist"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Marta Vilajosana"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q9254940"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Esele Bakasu"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Congolese association football player"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Esele Bakasu"
+      }
+    } ]
+  }
+}

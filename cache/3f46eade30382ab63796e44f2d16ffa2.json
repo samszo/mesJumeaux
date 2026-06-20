@@ -1,0 +1,68 @@
+{
+  "head" : {
+    "vars" : [ "item", "articlename", "itemLabel", "itemDescription" ]
+  },
+  "results" : {
+    "bindings" : [ {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q1706630"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Joseph Blowick"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Irish politician (1903-1970)"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Joseph Blowick"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q18043857"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Yasutarō Koide"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Japanese supercentenarian"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Yasutaro Koide"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q4089995"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Étienne Baudo"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "French musician (1903–2001)"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Étienne Baudo"
+      }
+    } ]
+  }
+}

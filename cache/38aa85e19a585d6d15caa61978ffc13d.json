@@ -1,0 +1,388 @@
+{
+  "head" : {
+    "vars" : [ "item", "articlename", "itemLabel", "itemDescription" ]
+  },
+  "results" : {
+    "bindings" : [ {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q128845"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Lee Baxter"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Swedish association football player"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Lee Baxter"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q278777"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Peter Svidler"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Russian chess player"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Peter Svidler"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q28310"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Scott Adkins"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "English actor and martial artist (born 1976)"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Scott Adkins"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q531763"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Morten Østergaard"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Danish politician"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Morten Østergaard"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q671300"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Keith Gleeson"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Irish-Australian rugby union player"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Keith Gleeson"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q715483"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Dušan Vemić"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Serbian tennis player"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Dušan Vemić"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q723461"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Heather Mazur"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "actress"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Heather Mazur"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q730443"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Sven Nys"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Belgian cyclo-crosser"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Sven Nys"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q1307140"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Stefan Müller-Altermatt"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Swiss politician"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Stefan Müller-Altermatt"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q2718535"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Milan Gurović"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "professional basketball player"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Milan Gurović"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q3538582"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Trevor Halstead"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "South African rugby union footballer"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Trevor Halstead"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q5219233"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Daniela Mărănducă"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Romanian gymnast"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Daniela Mărănducă"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q886897"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Carolina Pascual"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Spanish individual rhythmic gymnast"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Carolina Pascual"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q17008357"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Nguyễn Thị Thanh An"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Vietnamese chess player"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Nguyễn Thị Thanh An"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q18647975"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Ioan Vulpescu"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Romanian politician"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Ionuț Vulpescu"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q19118855"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Ricky Molier"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Dutch wheelchair tennis player"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Ricky Molier"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q26212862"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Nonso Diobi"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Nigerian actor"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Nonso Diobi"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q111653507"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Badjata Mélissa Ilébou"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Burkinabe singer"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Djata Ilébou"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q111974554"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Estelle Folest"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "French politician"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Estelle Folest"
+      }
+    } ]
+  }
+}

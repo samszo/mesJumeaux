@@ -1,0 +1,428 @@
+{
+  "head" : {
+    "vars" : [ "item", "articlename", "itemLabel", "itemDescription" ]
+  },
+  "results" : {
+    "bindings" : [ {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q185115"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Edgar Davids"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Dutch association football player and manager"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Edgar Davids"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q30570"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "David Draiman"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "American singer"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "David Draiman"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q386958"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Olivier Asmaker"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "French racing cyclist"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Olivier Asmaker"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q1110305"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Michele Borghetti"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Italian grandmaster of international, Italian, and English draughts (born 1973)"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Michele Borghetti"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q507163"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Marcelo Delgado"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Argentine footballer"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Marcelo Delgado"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q526241"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Bobby Jackson"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "NBA basketball player"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Bobby Jackson"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q592216"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Thomas Gomart"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "International relations scholar"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Thomas Gomart"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q704699"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Wong Kam-po"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Hong Kong cyclist"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Wong Kam Po"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q721499"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Brad Smyth"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Canadian ice hockey player"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Brad Smyth"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q2777783"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Jennifer Evenhuis"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Dutch cabaret artist"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Jennifer Evenhuis"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q3300106"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Maud Kennedy"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "French pornographic actress"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Maud Kennedy"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q3612577"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Allison Cavanaugh"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Canadian swimmer"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Allison Higson"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q5214594"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Dan Wilkinson"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "All-American college football player, professional football player, defensive lineman"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Dan Wilkinson"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q131438115"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Andrés Felipe Guerra"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Colombian politician"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Andrés Guerra"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q101555742"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Emebet Shiferaw"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Eritrean athletics competitor"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Emebet Shiferaw"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q15452740"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Clovis Nicolas"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "American composer"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Clovis Nicolas"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q16420426"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Ólafur Darri Ólafsson"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Icelandic actor"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Ólafur Darri Ólafsson"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q18344734"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Mihai Drăguș"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Romanian association football player"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Mihai Drăguș"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q33113325"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Massimiliano Napolitano"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Italian racing cyclist"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Massimiliano Napolitano"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q63940577"
+      },
+      "itemLabel" : {
+        "xml:lang" : "mul",
+        "type" : "literal",
+        "value" : "Richard Larsson"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Norwegian squash player"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Richard Larsson"
+      }
+    }, {
+      "item" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q67581197"
+      },
+      "itemLabel" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Sonia Touati"
+      },
+      "itemDescription" : {
+        "xml:lang" : "en",
+        "type" : "literal",
+        "value" : "Tunisian table tennis player"
+      },
+      "articlename" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "Sonia Touati"
+      }
+    } ]
+  }
+}

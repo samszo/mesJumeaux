@@ -119,9 +119,10 @@
     'Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
   const tooltip = d3.select("#tooltip")
 
-  // ── Rate-limiter images : 10 requêtes / minute ────────────────────────
+  // ── Rate-limiter images : batch de 50 entités, 1 requête / 2 s ──────────
   const imageRateLimiter = {
-    INTERVAL: 6000,   // ms entre chaque requête (60 000 / 10)
+    BATCH_SIZE: 50,
+    INTERVAL: 2000,
     queue: [],
     timer: null,
     enqueue(entityId, imgEl) {
@@ -132,14 +133,16 @@
     },
     _next() {
       if (!this.queue.length) { this.timer = null; return; }
-      const { entityId, imgEl } = this.queue.shift();
-      getP18Image(entityId).then(url => {
-        if (url && imgEl) { imgEl.src = url; imgEl.onload = () => imgEl.classList.add('loaded'); }
+      const batch = this.queue.splice(0, this.BATCH_SIZE);
+      getP18ImageBatch(batch.map(b => b.entityId)).then(urlMap => {
+        for (const { entityId, imgEl } of batch) {
+          const url = urlMap[entityId];
+          if (url && imgEl) { imgEl.src = url; imgEl.onload = () => imgEl.classList.add('loaded'); }
+        }
       }).finally(() => {
         this.timer = setTimeout(() => this._next(), this.INTERVAL);
       });
     },
-    // Taille actuelle pour affichage
     get pending() { return this.queue.length; },
   };
 
@@ -309,21 +312,26 @@ WHERE {
 
   }
 
-  // Fetch P18 (image) claim and return a Wikimedia Commons thumbnail URL, or null
-  async function getP18Image(entityId) {
+  // Fetch P18 (image) for a batch of entity IDs; returns { entityId: url|null }
+  async function getP18ImageBatch(entityIds) {
+    const result = Object.fromEntries(entityIds.map(id => [id, null]));
     try {
+      const ids  = entityIds.join('|');
       const url  = `https://www.wikidata.org/w/api.php?action=wbgetentities`
-                  + `&ids=${entityId}&props=claims&format=json&origin=*`;
+                  + `&ids=${encodeURIComponent(ids)}&props=claims&format=json&origin=*`;
       const r    = await fetch(url);
       const data = await r.json();
-      const p18  = data.entities?.[entityId]?.claims?.P18 ?? [];
-      if (!p18.length) return null;
-      const filename = p18[0].mainsnak?.datavalue?.value;
-      if (!filename) return null;
-      const encoded = encodeURIComponent(filename.replace(/ /g, '_'));
-      return `https://commons.wikimedia.org/w/index.php`
-            + `?title=Special:Redirect/file/${encoded}&width=120`;
-    } catch { return null; }
+      for (const entityId of entityIds) {
+        const p18 = data.entities?.[entityId]?.claims?.P18 ?? [];
+        if (!p18.length) continue;
+        const filename = p18[0].mainsnak?.datavalue?.value;
+        if (!filename) continue;
+        const encoded = encodeURIComponent(filename.replace(/ /g, '_'));
+        result[entityId] = `https://commons.wikimedia.org/w/index.php`
+                         + `?title=Special:Redirect/file/${encoded}&width=120`;
+      }
+    } catch { /* silently ignore network errors */ }
+    return result;
   }
 
   function appendEmptyYear(year) {
