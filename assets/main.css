@@ -73,7 +73,7 @@
 
     .search-section {
       max-width: 600px;
-      margin: 0.8rem auto;
+      margin: 0.1rem auto;
       padding: 0 1rem 0.8rem;
       text-align: center;
     }
@@ -252,6 +252,106 @@
 
     .card-link:hover { color: #52b788; }
 
+    /* ── Statistiques ── */
+    .stats-section {
+      max-width: 900px;
+      margin: 1.5rem auto;
+      padding: 1.2rem 1.5rem;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 14px;
+    }
+    .stats-section.hidden { display: none; }
+
+    .stats-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 1rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .stats-card {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      text-align: center;
+    }
+
+    .stats-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #f0f9ff;
+      line-height: 1;
+    }
+
+    .stats-label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stats-peak {
+      font-size: 0.9rem;
+      color: #94d2bd;
+      margin-bottom: 1rem;
+    }
+
+    .stats-top-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #475569;
+      margin-bottom: 0.5rem;
+    }
+
+    .stats-top-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .stats-top-year {
+      width: 3.2rem;
+      text-align: right;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      flex-shrink: 0;
+    }
+
+    .stats-top-bar-wrap {
+      flex: 1;
+      height: 8px;
+      background: #0f172a;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .stats-top-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #2d6a4f, #38bdf8);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    .stats-top-count {
+      width: 2rem;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
     /* ── Images dans les cards ── */
     .card img {
       display: none;
@@ -284,6 +384,62 @@
       border-color: #38bdf8 !important;
       background: #172a3a !important;
     }
+
+    /* ── Progression images (barre inline dans heatmap-header) ── */
+    .img-progress-inline {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      min-width: 0;
+    }
+    .img-progress-inline.hidden { display: none; }
+
+    .img-progress-label-inline {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .img-progress-bar-wrap-inline {
+      flex: 1;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 999px;
+      overflow: hidden;
+      min-width: 60px;
+    }
+
+    .img-progress-bar-inline {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    .img-progress-timer-inline {
+      font-size: 0.72rem;
+      color: #475569;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── Bouton image par année ── */
+    .btn-year-img {
+      background: transparent;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      border-radius: 6px;
+      padding: 0.1rem 0.4rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+    .btn-year-img:hover { border-color: #38bdf8; color: #38bdf8; }
+    .btn-year-img:disabled { opacity: 0.4; cursor: default; }
 
     /* ── Modal titre/auteur ── */
     .modal-overlay {
@@ -534,15 +690,20 @@
       left: 0;
       top: 0;
       height: 100vh;
-      width: 160px;
+      width: 600px;
       background: #0f172a;
       border-right: 1px solid #1e293b;
       z-index: 199;
       display: flex;
       flex-direction: column;
       transition: transform 0.25s ease;
+      overflow-y: auto;
     }
-    .year-nav.hidden { transform: translateX(-160px); }
+    #year-nav::-webkit-scrollbar { width: 4px; }
+    #year-nav::-webkit-scrollbar-track { background: transparent; }
+    #year-nav::-webkit-scrollbar-thumb { background: #960d3f; border-radius: 2px; }
+
+    .year-nav.hidden { transform: translateX(-600px); }
 
     .year-nav-header {
       display: flex;
@@ -569,6 +730,7 @@
     .year-nav-close:hover { color: #e2e8f0; }
 
     #year-nav-list {
+      display: contents;
       list-style: none;
       overflow-y: auto;
       flex: 1;
@@ -698,7 +860,7 @@
     #heatmap-section {
       display: none;
       max-width: 900px;
-      margin: 1rem auto 2rem;
+      /*margin: 1rem auto 2rem;*/
       padding: 0 1rem;
     }
 
@@ -878,6 +1040,8 @@
     #tooltip{
         position: absolute;
         display: none;
+        background-color: black;
+        color: white;        
     }
     #yearsLegend{
         width: 100%;
