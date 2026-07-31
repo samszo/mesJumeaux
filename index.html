@@ -20,6 +20,7 @@
   <p>Découvrez les personnalités nées le même jour que vous</p>
   <div class="header-actions">
     <button class="btn-archives" onclick="toggleSelections()">⭐ Sélections</button>
+    <button class="btn-archives" id="groupToggleBtn" onclick="toggleGroupByCategory()">🗂 Par catégorie</button>
   </div>
 </header>
 
@@ -59,6 +60,27 @@
   </div>
 
 </div>
+
+<div class="filters-bar" id="filters-bar">
+  <div class="field celeb-slider-field">
+    <label>Indice célébrité : <span id="celebMinValue">0</span> – <span id="celebMaxValue">0</span></label>
+    <div class="celeb-slider" id="celebSlider">
+      <div class="celeb-slider-track"></div>
+      <div class="celeb-slider-range" id="celebSliderRange"></div>
+      <input type="range" id="celebMinRange" class="celeb-slider-input" min="0" max="1" value="0" oninput="onCelebRangeInput('min')">
+      <input type="range" id="celebMaxRange" class="celeb-slider-input" min="0" max="1" value="1" oninput="onCelebRangeInput('max')">
+    </div>
+  </div>
+  <div class="field">
+    <label>Catégorie</label>
+    <select id="categoryFilterSelect" onchange="applyFilters()"></select>
+  </div>
+  <div class="field">
+    <label>&nbsp;</label>
+    <button class="btn-archives" onclick="resetFilters()">✕ Réinitialiser les filtres</button>
+  </div>
+</div>
+
 <div id="load-count" style="display:none;text-align:center;color:#64748b;font-size:0.85rem;margin:0.5rem 0"></div>
 <div id="status"></div>
 <div id="stop-bar" style="display:none;text-align:center;margin-bottom:1rem">
@@ -270,7 +292,206 @@
   let state = {
     running: false, allResults: [],
     day: 17, month: 6, startYear: 2025, endYear: 1800,
+    viewMode: 'year', cardsByQid: new Map(),
   };
+
+  // ── Catégories de personnes (classification par mots-clés) ────────────────
+  // Faute d'occupation (P106) en base locale, on déduit la catégorie depuis
+  // le champ "description" (courte notice Wikidata, FR/EN principalement).
+  const CATEGORIES = [
+    { key: 'politiciens',    label: 'Politiciens',    icon: '🏛️', keywords: [
+      'politicien','politicienne','politique','homme politique','femme politique','president','ministre',
+      'senateur','senatrice','depute','deputee','maire','diplomate','roi ','reine','empereur',
+      'imperatrice','duc ','duchesse','prince','princesse','chancelier','chanceliere',
+      'gouverneur','gouverneure','politician','senator','minister','mayor','diplomat','king ',
+      'queen','emperor','empress',
+    ]},
+    { key: 'sportifs',       label: 'Sportifs',       icon: '🏅', keywords: [
+      'footballeur','footballeuse','joueur de football','joueuse de football','athlete',
+      'nageur','nageuse','cycliste','boxeur','boxeuse','basketteur','basketteuse','tennisman',
+      'tenniswoman','judoka','hockeyeur','hockeyeuse','rugbyman','pilote automobile','gymnaste',
+      'skieur','skieuse','escrimeur','escrimeuse','karateka','halterophile','sportif','sportive',
+      'joueur de ','joueuse de ','footballer','swimmer','cyclist','boxer','basketball player',
+      'tennis player','gymnast','skier','weightlifter','wrestler','wrestling','sprinter',
+      'marathon','handball','volleyball','baseball player','ice hockey player','speed skater',
+      'fencer','archer','rower','rugby','javelin','discus','hurdler','triathlete','curler',
+    ]},
+    { key: 'artistes',       label: 'Artistes',       icon: '🎨', keywords: [
+      'acteur','actrice','chanteur','chanteuse','musicien','musicienne','peintre','sculpteur',
+      'sculptrice','ecrivain','ecrivaine','romancier','romanciere','poete','poetesse',
+      'realisateur','realisatrice','cineaste','photographe','danseur','danseuse','artiste',
+      'dessinateur','dessinatrice','scenariste','compositeur','compositrice','choregraphe',
+      'designer','architecte','organiste','organist','musicolog',
+      'actor','actress','singer','musician','painter','sculptor','writer','novelist','poet',
+      'film director','photographer','dancer','artist','composer','choreographer','cartoonist',
+      'architect',
+    ]},
+    { key: 'scientifiques',  label: 'Scientifiques',  icon: '🔬', keywords: [
+      'scientifique','physicien','physicienne','chimiste','biologiste','mathematicien',
+      'mathematicienne','astronome','medecin','chercheur','chercheuse','ingenieur','ingenieure',
+      'inventeur','inventrice','naturaliste','botaniste','geologue','scientist','physicist',
+      'chemist','biologist','mathematician','astronomer','physician','researcher','engineer',
+      'inventor',
+    ]},
+    { key: 'religieux',      label: 'Religieux',      icon: '✝️', keywords: [
+      'eveque','pretre','pape','cardinal','moine','theologien','theologienne','rabbin','imam',
+      'pasteur','religieuse','abbe ','bishop','priest','pope','monk','theologian','rabbi',
+    ]},
+    { key: 'militaires',     label: 'Militaires',     icon: '🎖️', keywords: [
+      'militaire','general','generale','officier','soldat','amiral','colonel','capitaine',
+      'marechal','soldier','admiral',
+    ]},
+    { key: 'juristes',       label: 'Juristes',       icon: '⚖️', keywords: [
+      'juriste','avocat','avocate','juge','magistrat','magistrate','lawyer','judge','jurist',
+    ]},
+    { key: 'entrepreneurs',  label: "Entrepreneurs",  icon: '💼', keywords: [
+      "entrepreneur","entrepreneuse","homme d'affaires","femme d'affaires","industriel",
+      'industrielle','businessman','businesswoman',
+    ]},
+    { key: 'journalistes',   label: 'Journalistes',   icon: '📰', keywords: [
+      'journaliste','presentateur','presentatrice','journalist','broadcaster',
+    ]},
+  ];
+  const CATEGORY_AUTRES = { key: 'autres', label: 'Autres', icon: '👤' };
+
+  function normalizeText(str) {
+    return String(str || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
+
+  function classifyCategory(desc) {
+    const norm = normalizeText(desc);
+    if (!norm) return CATEGORY_AUTRES;
+    for (const cat of CATEGORIES) {
+      if (cat.keywords.some(kw => norm.includes(kw))) return cat;
+    }
+    return CATEGORY_AUTRES;
+  }
+
+  // Indice de célébrité = taille de la notice (nb caractères de la description)
+  // × (1 + 10 × nombre de personnes influencées par cette personne, propriété P737 inversée).
+  // Le "+1" garantit un indice non nul même sans donnée d'influence connue.
+  function celebrityScore(desc, influencedCount) {
+    return (desc || '').length * (1 + 10 * (influencedCount || 0));
+  }
+
+  // ── Filtres cumulatifs (indice de célébrité + catégorie) ────────────────
+  function populateCategoryFilterOptions() {
+    const select = document.getElementById('categoryFilterSelect');
+    select.innerHTML = '<option value="">Toutes catégories</option>' +
+      [...CATEGORIES, CATEGORY_AUTRES].map(c =>
+        `<option value="${c.key}">${c.icon} ${escapeHtml(c.label)}</option>`).join('');
+  }
+
+  // ── Slider à deux curseurs (indice de célébrité) ────────────────────────
+  // Les bornes du slider sont recalculées à chaque recherche pour coller
+  // aux indices de célébrité réellement présents dans les résultats affichés.
+  function setCelebSliderBounds(min, max) {
+    min = Math.floor(min || 0);
+    max = Math.ceil(max || 0);
+    if (min === max) max = min + 1;
+    const minRange = document.getElementById('celebMinRange');
+    const maxRange = document.getElementById('celebMaxRange');
+    // step reste à 1 : un pas plus large ferait arrondir .value au multiple de step
+    // le plus proche (y compris pour une affectation programmatique), ce qui peut
+    // exclure le score maximum réel du curseur "max" une fois replacé en butée.
+    for (const r of [minRange, maxRange]) {
+      r.min = min;
+      r.max = max;
+      r.step = 1;
+    }
+    minRange.value = min;
+    maxRange.value = max;
+    updateCelebSliderUI();
+  }
+
+  function onCelebRangeInput(which) {
+    const minRange = document.getElementById('celebMinRange');
+    const maxRange = document.getElementById('celebMaxRange');
+    if (which === 'min' && +minRange.value > +maxRange.value) minRange.value = maxRange.value;
+    if (which === 'max' && +maxRange.value < +minRange.value) maxRange.value = minRange.value;
+    updateCelebSliderUI();
+    applyFilters();
+  }
+
+  function updateCelebSliderUI() {
+    const minRange = document.getElementById('celebMinRange');
+    const maxRange = document.getElementById('celebMaxRange');
+    const lo = +minRange.min, hi = +minRange.max, span = (hi - lo) || 1;
+    const minV = +minRange.value, maxV = +maxRange.value;
+    const pctMin = (minV - lo) / span * 100;
+    const pctMax = (maxV - lo) / span * 100;
+    const rangeEl = document.getElementById('celebSliderRange');
+    rangeEl.style.left  = pctMin + '%';
+    rangeEl.style.right = (100 - pctMax) + '%';
+    document.getElementById('celebMinValue').textContent = minV.toLocaleString('fr-FR');
+    document.getElementById('celebMaxValue').textContent = maxV.toLocaleString('fr-FR');
+  }
+
+  function resetFilters() {
+    const minRange = document.getElementById('celebMinRange');
+    const maxRange = document.getElementById('celebMaxRange');
+    minRange.value = minRange.min;
+    maxRange.value = maxRange.max;
+    updateCelebSliderUI();
+    document.getElementById('categoryFilterSelect').value = '';
+    applyFilters();
+  }
+
+  // Le filtre de célébrité est "actif" dès que le slider n'est plus sur sa
+  // pleine plage (bornée sur les résultats affichés).
+  function isCelebFilterActive() {
+    const minRange = document.getElementById('celebMinRange');
+    const maxRange = document.getElementById('celebMaxRange');
+    return +minRange.value > +minRange.min || +maxRange.value < +maxRange.max;
+  }
+
+  // Trie chaque grille du plus célèbre au moins célèbre quand le filtre de
+  // célébrité est actif, sinon restaure l'ordre naturel (année/catégorie).
+  function reorderGrids() {
+    const sortActive = isCelebFilterActive();
+    document.querySelectorAll('.grid').forEach(grid => {
+      if (sortActive) {
+        const cards = [...grid.children];
+        cards.sort((a, b) => (parseFloat(b.dataset.score) || 0) - (parseFloat(a.dataset.score) || 0));
+        for (const c of cards) grid.appendChild(c);
+      } else {
+        const order = (grid.dataset.naturalOrder || '').split('|').filter(Boolean);
+        for (const qid of order) {
+          const cardEl = state.cardsByQid.get(qid);
+          if (cardEl && cardEl.parentElement === grid) grid.appendChild(cardEl);
+        }
+      }
+    });
+  }
+
+  function applyFilters() {
+    const minVal = +document.getElementById('celebMinRange').value;
+    const maxVal = +document.getElementById('celebMaxRange').value;
+    const cat    = document.getElementById('categoryFilterSelect').value;
+
+    for (const card of state.cardsByQid.values()) {
+      const score = parseFloat(card.dataset.score) || 0;
+      let visible = true;
+      if (score < minVal || score > maxVal) visible = false;
+      if (cat && card.dataset.category !== cat) visible = false;
+      card.classList.toggle('filtered-out', !visible);
+    }
+
+    reorderGrids();
+
+    document.querySelectorAll('.year-section').forEach(section => {
+      const cards        = section.querySelectorAll('.card');
+      const visibleCount = [...cards].filter(c => !c.classList.contains('filtered-out')).length;
+      section.classList.toggle('hidden-by-filter', cards.length > 0 && visibleCount === 0);
+      const countEl = section.querySelector('.year-count, .category-count');
+      if (countEl && cards.length > 0) {
+        const total = cards.length;
+        countEl.textContent = visibleCount === total
+          ? `${total} personnalité${total > 1 ? 's' : ''}`
+          : `${visibleCount} / ${total} personnalité${total > 1 ? 's' : ''}`;
+      }
+    });
+  }
 
   // ── Sélection d'items ────────────────────────────────────────────────────
   const selection = {
@@ -331,6 +552,10 @@
     state.month       = month;
     state.startYear   = startYear;
     state.endYear     = endYear;
+    state.viewMode     = 'year';
+    state.cardsByQid   = new Map();
+    document.getElementById('groupToggleBtn').classList.remove('active');
+    resetFilters();
     document.getElementById('searchBtn').disabled = true;
     document.getElementById('stop-bar').style.display = 'block';
     document.getElementById('results').innerHTML = '';
@@ -344,6 +569,18 @@
     try {
       const allRows = await localFetch(day, month);
 
+      // Complète en tâche de fond les données d'influence manquantes pour
+      // cette date (P737 inversé, sitelinks, statements…), sans bloquer
+      // l'affichage. Best-effort : on ignore silencieusement les erreurs.
+      fetch(`trigger-influence.php?day=${day}&month=${month}`).catch(() => {});
+
+      // Classification par catégorie + indice de célébrité (une seule fois par personne)
+      for (const r of allRows) {
+        const desc = r.item.description || '';
+        r.category = classifyCategory(desc);
+        r.celebrityScore = celebrityScore(desc, r.influencedCount);
+      }
+
       // Groupe par année, filtre selon startYear/endYear
       const byYear = {};
       for (const r of allRows) {
@@ -352,6 +589,16 @@
         if (!byYear[y]) byYear[y] = [];
         byYear[y].push(r);
       }
+
+      // Borne le slider d'indice de célébrité sur les résultats réellement affichés
+      let scoreMin = Infinity, scoreMax = -Infinity;
+      for (const list of Object.values(byYear)) {
+        for (const r of list) {
+          if (r.celebrityScore < scoreMin) scoreMin = r.celebrityScore;
+          if (r.celebrityScore > scoreMax) scoreMax = r.celebrityScore;
+        }
+      }
+      setCelebSliderBounds(isFinite(scoreMin) ? scoreMin : 0, isFinite(scoreMax) ? scoreMax : 1);
 
       // Affiche du plus récent au plus ancien
       const years = Object.keys(byYear).map(Number).sort((a, b) => b - a);
@@ -366,6 +613,50 @@
     }
 
     finishSearch();
+  }
+
+  function createCard(r, year) {
+    const name        = r.item.label    || '(sans nom)';
+    const desc        = r.item.description || '';
+    const article     = r.articlename  || '';
+    const wikidataUrl = r.item.value ? `https://www.wikidata.org/wiki/${r.item.value}` : '#';
+    const wpUrl       = r.wikilang ? `https://${r.wikilang}.wikipedia.org/wiki/${encodeURIComponent(article)}` : null;
+    const category    = r.category || classifyCategory(desc);
+    const score       = r.celebrityScore ?? celebrityScore(desc, r.influencedCount);
+
+    const qid = r.item.value || '';
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.qid = qid;
+    card.dataset.category = category.key;
+    card.dataset.score = score;
+    card.innerHTML = `
+      <label class="card-select" title="Sélectionner">
+        <input type="checkbox" class="card-checkbox" data-qid="${escapeHtml(qid)}">
+      </label>
+      <span class="card-category" title="Catégorie déduite de la description">${category.icon} ${escapeHtml(category.label)}</span>
+      <div class="card-name">${escapeHtml(name)}</div>
+      ${desc ? `<div class="card-desc">${escapeHtml(desc)}</div>` : ''}
+      <div class="card-celeb${score > 0 ? '' : ' card-celeb-zero'}" title="Indice de célébrité = taille de la notice × personnes influencées">
+        ⭐ ${score.toLocaleString('fr-FR')}${r.influencedCount > 0 ? ` (${r.influencedCount} influencé${r.influencedCount > 1 ? 's' : ''})` : ''}
+      </div>
+      <img id="${qid}-img" />
+      <div style="margin-top:auto;display:flex;gap:0.6rem;flex-wrap:wrap">
+        ${wpUrl ? `<a class="card-link" href="${escapeHtml(wpUrl)}" target="_blank" rel="noopener">Wikipedia →</a>` : ''}
+        <a class="card-link" href="${escapeHtml(wikidataUrl)}" target="_blank" rel="noopener">Wikidata →</a>
+      </div>`;
+    card.querySelector('.card-checkbox').addEventListener('change', e => {
+      const qid = e.target.dataset.qid;
+      if (e.target.checked) {
+        card.classList.add('card-selected');
+        selection.add(qid, { year, name, desc, article, wikidataUrl, wpUrl, qid });
+      } else {
+        card.classList.remove('card-selected');
+        selection.remove(qid);
+      }
+    });
+    if (qid) state.cardsByQid.set(qid, card);
+    return card;
   }
 
   function appendYearSection(year, day, month, results) {
@@ -389,40 +680,10 @@
 
     const grid = document.createElement('div');
     grid.className = 'grid';
+    grid.dataset.naturalOrder = results.map(r => r.item.value).join('|');
 
     for (const r of results) {
-      const name        = r.item.label    || '(sans nom)';
-      const desc        = r.item.description || '';
-      const article     = r.articlename  || '';
-      const wikidataUrl = r.item.value ? `https://www.wikidata.org/wiki/${r.item.value}` : '#';
-      const wpUrl       = r.wikilang ? `https://${r.wikilang}.wikipedia.org/wiki/${encodeURIComponent(article)}` : null;
-
-      const qid = r.item.value || '';
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.dataset.qid = qid;
-      card.innerHTML = `
-        <label class="card-select" title="Sélectionner">
-          <input type="checkbox" class="card-checkbox" data-qid="${escapeHtml(qid)}">
-        </label>
-        <div class="card-name">${escapeHtml(name)}</div>
-        ${desc ? `<div class="card-desc">${escapeHtml(desc)}</div>` : ''}
-        <img id="${qid}-img" />
-        <div style="margin-top:auto;display:flex;gap:0.6rem;flex-wrap:wrap">
-          ${wpUrl ? `<a class="card-link" href="${escapeHtml(wpUrl)}" target="_blank" rel="noopener">Wikipedia →</a>` : ''}
-          <a class="card-link" href="${escapeHtml(wikidataUrl)}" target="_blank" rel="noopener">Wikidata →</a>
-        </div>`;
-      card.querySelector('.card-checkbox').addEventListener('change', e => {
-        const qid = e.target.dataset.qid;
-        if (e.target.checked) {
-          card.classList.add('card-selected');
-          selection.add(qid, { year, name, desc, article, wikidataUrl, wpUrl, qid });
-        } else {
-          card.classList.remove('card-selected');
-          selection.remove(qid);
-        }
-      });
-      grid.appendChild(card);
+      grid.appendChild(createCard(r, year));
     }
 
     section.appendChild(grid);
@@ -440,6 +701,86 @@
     }
   }
 
+  // ── Vue "grouper par catégorie" ─────────────────────────────────────────
+  // Réutilise les cards (et donc les images déjà chargées) en les déplaçant
+  // dans le DOM plutôt qu'en les recréant.
+  function toggleGroupByCategory() {
+    if (!state.allResults.length) return;
+    state.viewMode = state.viewMode === 'category' ? 'year' : 'category';
+    document.getElementById('groupToggleBtn').classList.toggle('active', state.viewMode === 'category');
+    if (state.viewMode === 'category') renderCategoryView();
+    else renderYearViewFromState();
+  }
+
+  function renderYearViewFromState() {
+    const container = document.getElementById('results');
+    container.innerHTML = '';
+    for (const { year, items } of state.allResults) {
+      if (!items.length) continue;
+      const section = document.createElement('div');
+      section.className = 'year-section';
+      section.id = `year-${year}`;
+
+      const heading = document.createElement('div');
+      heading.className = 'year-heading';
+      heading.innerHTML = `${year}
+        <span class="year-count">${items.length} personnalité${items.length > 1 ? 's' : ''}</span>`;
+      section.appendChild(heading);
+
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      grid.dataset.naturalOrder = items.map(r => r.item.value).join('|');
+      for (const r of items) {
+        const cardEl = state.cardsByQid.get(r.item.value);
+        if (cardEl) grid.appendChild(cardEl);
+      }
+      section.appendChild(grid);
+      container.appendChild(section);
+    }
+    applyFilters();
+  }
+
+  function renderCategoryView() {
+    const container = document.getElementById('results');
+    container.innerHTML = '';
+
+    const groups = new Map();
+    for (const { items } of state.allResults) {
+      for (const r of items) {
+        const cat = r.category || classifyCategory(r.item.description || '');
+        if (!groups.has(cat.key)) groups.set(cat.key, { cat, items: [] });
+        groups.get(cat.key).items.push(r);
+      }
+    }
+
+    const order = [...CATEGORIES.map(c => c.key), CATEGORY_AUTRES.key];
+    const sortedKeys = [...groups.keys()].sort((a, b) => order.indexOf(a) - order.indexOf(b));
+
+    for (const key of sortedKeys) {
+      const { cat, items } = groups.get(key);
+
+      const section = document.createElement('div');
+      section.className = 'year-section';
+
+      const heading = document.createElement('div');
+      heading.className = 'year-heading';
+      heading.innerHTML = `${cat.icon} ${escapeHtml(cat.label)}
+        <span class="category-count">${items.length} personnalité${items.length > 1 ? 's' : ''}</span>`;
+      section.appendChild(heading);
+
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      grid.dataset.naturalOrder = items.map(r => r.item.value).join('|');
+      for (const r of items) {
+        const cardEl = state.cardsByQid.get(r.item.value);
+        if (cardEl) grid.appendChild(cardEl);
+      }
+      section.appendChild(grid);
+      container.appendChild(section);
+    }
+    applyFilters();
+  }
+
   // Fetch P18 (image) for a batch of entity IDs; returns { entityId: url|null }
   async function getP18ImageBatch(entityIds) {
     const result = Object.fromEntries(entityIds.map(id => [id, null]));
@@ -451,12 +792,12 @@
       const data = await r.json();
       for (const entityId of entityIds) {
         const p18 = data.entities?.[entityId]?.claims?.P18 ?? [];
-        if (!p18.length) continue;
-        const filename = p18[0].mainsnak?.datavalue?.value;
+        const filename = p18[0]?.mainsnak?.datavalue?.value;
         if (!filename) continue;
-        const encoded = encodeURIComponent(filename.replace(/ /g, '_'));
-        result[entityId] = `https://commons.wikimedia.org/w/index.php`
-                         + `?title=Special:Redirect/file/${encoded}&width=120`;
+        // Passe par notre cache local (cache/img/) au lieu de hotlinker Commons
+        // directement, pour ne pas retélécharger la même image à chaque affichage.
+        const params = new URLSearchParams({ qid: entityId, file: filename, width: '120' });
+        result[entityId] = `image.php?${params.toString()}`;
       }
     } catch { /* silently ignore network errors */ }
     return result;
@@ -549,6 +890,13 @@
   }
 
   function showYearFromTimeline(year) {
+    // Revenir à la vue par année si on est en vue par catégorie
+    if (state.viewMode === 'category') {
+      state.viewMode = 'year';
+      document.getElementById('groupToggleBtn').classList.remove('active');
+      renderYearViewFromState();
+    }
+
     // Retirer le focus des autres lignes
     document.querySelectorAll('.tl-row.tl-active').forEach(r => r.classList.remove('tl-active'));
     const row = document.getElementById(`tl-${year}`);
@@ -1014,6 +1362,9 @@
 
   function calHeatmapPrev() { _cal?.previous(); }
   function calHeatmapNext() { _cal?.next(); }
+
+  populateCategoryFilterOptions();
+  updateCelebSliderUI();
 
   // ── Paramètres URL ───────────────────────────────────────────────────────
   (function initFromUrl() {
