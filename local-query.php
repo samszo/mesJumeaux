@@ -41,23 +41,23 @@ try {
     exit;
 }
 
-//requête poru mettre à jour les influences
-$upsert = $pdo->prepare(
-    'INSERT INTO wikidata_influence (entity_id, influenced_count, sitelinks, statements, externalIds)
-     VALUES (:id, :influ, :sitelinks, :statements, :externalIds)
-     ON DUPLICATE KEY UPDATE influenced_count = VALUES(influenced_count),
-       sitelinks = VALUES(sitelinks), statements = VALUES(statements),
-       externalIds = VALUES(externalIds)'
-);
 
-
-// ── Requête pour récupérer les influences non calculées
-$sql = "SELECT e.*, p.value_str, i.statements AS influence
-        FROM wikidata_properties p
-        INNER JOIN wikidata_entities e ON p.entity_id = e.id and p.property = 'P569'
-        LEFT JOIN wikidata_influence i ON i.entity_id = e.id
-        WHERE SUBSTR(p.value_str, 7, 5) = ?
-        ORDER BY p.value_str DESC";
+// ── Requête pour récupérer les jumeaux avec toutes les informations
+$sql = "SELECT e.id, e.label, e.description, e.sitelinks, e.statements, e.externalIds, pNait.value_str
+, COUNT(DISTINCT pInf.entity_id) nbInflu
+, (e.sitelinks + e.statements + e.externalIds) * (COUNT(DISTINCT pInf.entity_id)+1) importance
+, group_concat(DISTINCT g.label) lieux, group_concat(DISTINCT g.latitude) lats, group_concat(DISTINCT g.longitude) lngs 
+, MIN(pIma.value_str) image
+FROM wikidata_entities e
+INNER JOIN  wikidata_properties pNait ON pNait.entity_id = e.id and pNait.property = 'P569'
+LEFT JOIN  wikidata_properties pInf ON pInf.value_id = e.id and pInf.property = 'P737'
+LEFT JOIN  wikidata_properties pIma ON pIma.entity_id = e.id and pIma.property = 'P18'
+-- LEFT JOIN  wikidata_properties pOccu ON pOccu.entity_id = e.id and pOccu.property = 'P106'
+LEFT JOIN  wikidata_properties pGeo ON pGeo.entity_id = e.id and pGeo.property = 'P19'
+LEFT JOIN  wikidata_geos g ON g.id = pGeo.value_id
+WHERE SUBSTR(pNait.value_str, 7, 5) = ?
+GROUP BY e.id
+ORDER BY importance DESC";
 
 try {
     $stmt = $pdo->prepare($sql);
@@ -67,57 +67,6 @@ try {
     http_response_code(500);
     echo json_encode(['error' => 'Requête : ' . $e->getMessage()]);
     exit;
-}
-
-//filtre les données non influencées
-$todo = array_filter($rows, function($v) {
-    return $v['influence'] == 0;
-});
-
-//lance le traitement de calcul de l'influence
-$done = 0;
-$total = count($todo);
-foreach ($todo as $r) {
-    $qid = $r["id"]; 
-    if (!preg_match('/^Q\d+$/', $qid)) continue;
-
-    $url = 'https://query.wikidata.org/sparql?' . http_build_query([
-        'query'  => personQuery($qid),
-        'format' => 'json',
-    ]);
-    $ctx = stream_context_create(['http' => [
-        'header'  => "Accept: application/sparql-results+json\r\nUser-Agent: mesJumeaux/1.0 (local import script)\r\n",
-        'timeout' => 30,
-    ]]);
-
-    $raw = @file_get_contents($url, false, $ctx);
-    if ($raw === false) {
-        continue;
-    }
-
-    $data = json_decode($raw, true);
-    $row  = $data['results']['bindings'][0] ?? null;
-    if (!$row) {
-        continue;
-    }
-
-    $sitelinks   = intval($row['sitelinks']['value'] ?? 0);
-    $statements  = intval($row['statements']['value'] ?? 0);
-    $externalIds = intval($row['externalIds']['value'] ?? 0);
-    $nbInflu     = intval($row['nbInflu']['value'] ?? 0);
-
-    $upsert->execute([
-        'id'          => $qid,
-        'influ'       => $nbInflu,
-        'sitelinks'   => $sitelinks,
-        'statements'  => $statements,
-        'externalIds' => $externalIds,
-    ]);
-    $done++;
-    //echo "  [$done/$total] $qid : sitelinks=$sitelinks statements=$statements externalIds=$externalIds influencés=$nbInflu\n";
-
-    // Pause courte entre deux requêtes pour ne pas marteler le endpoint public.
-    usleep(300000);
 }
 
 // ── Normalisation → format attendu par le JS ──────────────────────────────
@@ -133,7 +82,11 @@ foreach ($rows as $row) {
     $article     = $wikipedia ? $wikipedia[1] : "";
     $wikilang     = $wikipedia ? $wikipedia[0] : "";
     $valueStr    = $row['value_str']  ?? '';
-    $influenced  = intval($row['influenced_count'] ?? 0);
+    $importance  = intval($row['importance'] ?? 0);
+    $lieu  = $row['lieu'] ?? "";
+    $lat  = intval($row['latitude'] ?? 0);
+    $lng  = intval($row['longitude'] ?? 0);
+    $ima  = $row['image'] ?? "";
 
     // Extrait l'année depuis value_str (format attendu : "YYYY-MM-DD...")
     $year = intval(substr($valueStr, 1, 4));
@@ -143,45 +96,15 @@ foreach ($rows as $row) {
         'articlename'     => $article,
         'wikilang'        => $wikilang,
         'year'            => $year,
-        'influencedCount' => $influenced,
+        'importance' => $importance,
+        'lieu' => $lieu,
+        'lat' => $lat,
+        'lng' => $lng,
+        'image' => $ima,
     ];
 }
 
 $body = json_encode($results, JSON_UNESCAPED_UNICODE);
 file_put_contents($cacheFile, $body);
 echo $body;
-
-function personQuery(string $qid): string
-{
-    return <<<SPARQL
-        SELECT ?sitelinks ?statements ?externalIds ?nbInflu WHERE {
-          BIND(wd:$qid AS ?person)
-
-          # 1. Nombre de sitelinks (liens interlangues Wikipédia/Wikimedia)
-          ?person wikibase:sitelinks ?sitelinks .
-
-          # 2. Nombre total de déclarations (statements)
-          ?person wikibase:statements ?statements .
-
-          # 3. Nombre d'identifiants externes
-          {
-            SELECT (COUNT(?extId) AS ?externalIds) WHERE {
-              BIND(wd:$qid AS ?p)
-              ?p ?prop ?extId .
-              ?property wikibase:directClaim ?prop ;
-                        wikibase:propertyType wikibase:ExternalId .
-            }
-          }
-
-          # 4. Nombre de personnes influencées par cette personne (P737 inversé)
-          {
-            SELECT (COUNT(?influenced) AS ?nbInflu) WHERE {
-              BIND(wd:$qid AS ?p)
-              ?influenced wdt:P737 ?p .
-            }
-          }
-        }
-        SPARQL;
-}
-
 

@@ -184,7 +184,7 @@
   // ── Rate-limiter images avec progression ─────────────────────────────────
   const imageRateLimiter = {
     BATCH_SIZE: 50,
-    INTERVAL: 10000,
+    INTERVAL: 1000,
     queue: [],
     timer: null,
     _total: 0,
@@ -192,10 +192,10 @@
     _cancelled: false,
     _countdownTimer: null,
 
-    enqueue(entityId, imgEl) {
+    enqueue(entity, imgEl) {
       if (!imgEl || imgEl.dataset.queued) return;
       imgEl.dataset.queued = '1';
-      this.queue.push({ entityId, imgEl });
+      this.queue.push({ entity, imgEl });
       this._total++;
       if (!this.timer) {
         this._cancelled = false;
@@ -226,9 +226,10 @@
       this.timer = -1;
       const batch = this.queue.splice(0, this.BATCH_SIZE);
       this._updateModal();
-      getP18ImageBatch(batch.map(b => b.entityId)).then(urlMap => {
-        for (const { entityId, imgEl } of batch) {
-          const url = urlMap[entityId];
+      //getP18ImageBatch(batch.map(b => b.entity)).then(urlMap => {
+      getImageBatch(batch.map(b => b.entity)).then(urlMap => {
+        for (const { entity, imgEl } of batch) {
+          const url = entity.image;
           if (url && imgEl) { imgEl.src = url; imgEl.onload = () => imgEl.classList.add('loaded'); }
         }
         this._done += batch.length;
@@ -367,11 +368,10 @@
     return CATEGORY_AUTRES;
   }
 
-  // Indice de célébrité = taille de la notice (nb caractères de la description)
-  // × (1 + 10 × nombre de personnes influencées par cette personne, propriété P737 inversée).
-  // Le "+1" garantit un indice non nul même sans donnée d'influence connue.
-  function celebrityScore(desc, influencedCount) {
-    return (desc || '').length * (1 + 10 * (influencedCount || 0));
+  // Indice de célébrité = calcul fait dans la requêtes d'extraction par rapport aux données de la base :
+  // (e.sitelinks + e.statements + e.externalIds) * (COUNT(DISTINCT pInf.entity_id)+1) importance 
+  function celebrityScore(r) {
+    return r.importance;
   }
 
   // ── Filtres cumulatifs (indice de célébrité + catégorie) ────────────────
@@ -569,16 +569,11 @@
     try {
       const allRows = await localFetch(day, month);
 
-      // Complète en tâche de fond les données d'influence manquantes pour
-      // cette date (P737 inversé, sitelinks, statements…), sans bloquer
-      // l'affichage. Best-effort : on ignore silencieusement les erreurs.
-      fetch(`trigger-influence.php?day=${day}&month=${month}`).catch(() => {});
-
       // Classification par catégorie + indice de célébrité (une seule fois par personne)
       for (const r of allRows) {
         const desc = r.item.description || '';
         r.category = classifyCategory(desc);
-        r.celebrityScore = celebrityScore(desc, r.influencedCount);
+        r.celebrityScore = celebrityScore(r);
       }
 
       // Groupe par année, filtre selon startYear/endYear
@@ -697,7 +692,9 @@
 
     for (const r of results) {
       const imgEl = document.getElementById(r.item.value + '-img');
-      if (imgEl) imageRateLimiter.enqueue(r.item.value, imgEl);
+      if (imgEl && r.image) {
+        imageRateLimiter.enqueue(r, imgEl);
+      }
     }
   }
 
@@ -779,6 +776,12 @@
       container.appendChild(section);
     }
     applyFilters();
+  }
+
+  // Fetch image) from entity; returns { entityId: url|null }
+  async function getImageBatch(entities) {
+    entities.forEach(e => e.image = "https://commons.wikimedia.org/w/index.php?width=120&title=Special:Redirect/file/"+e.image);
+    return entities;
   }
 
   // Fetch P18 (image) for a batch of entity IDs; returns { entityId: url|null }
