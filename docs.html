@@ -1,0 +1,867 @@
+<title>Jumeaux de Naissance — Documentation</title>
+<style>
+/* ── Tokens ─────────────────────────────────────────────────────────── */
+:root {
+  --bg:        #f7f4ef;
+  --bg-alt:    #eeeae3;
+  --surface:   #ffffff;
+  --border:    #d6cebc;
+  --text:      #111c2d;
+  --muted:     #5a6a7e;
+  --accent:    #0e7dc2;
+  --accent-hi: #38bdf8;
+  --amber:     #c47a00;
+  --amber-bg:  #fff8e6;
+  --code-bg:   #1a2a3a;
+  --code-text: #a8d8f0;
+  --diagram-bg:#f0f4f8;
+  --diagram-border: #b8cfe0;
+  --nav-w:     240px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:        #0c1a2e;
+    --bg-alt:    #0f2038;
+    --surface:   #142135;
+    --border:    #1e3a5a;
+    --text:      #dde9f5;
+    --muted:     #7a95b0;
+    --accent:    #38bdf8;
+    --accent-hi: #7dd3fc;
+    --amber:     #f59e0b;
+    --amber-bg:  #1a2010;
+    --code-bg:   #091520;
+    --code-text: #a8d8f0;
+    --diagram-bg:#0f2038;
+    --diagram-border: #1e3a5a;
+  }
+}
+:root[data-theme="light"] {
+  --bg:#f7f4ef; --bg-alt:#eeeae3; --surface:#ffffff; --border:#d6cebc;
+  --text:#111c2d; --muted:#5a6a7e; --accent:#0e7dc2; --accent-hi:#38bdf8;
+  --amber:#c47a00; --amber-bg:#fff8e6; --code-bg:#1a2a3a; --code-text:#a8d8f0;
+  --diagram-bg:#f0f4f8; --diagram-border:#b8cfe0;
+}
+:root[data-theme="dark"] {
+  --bg:#0c1a2e; --bg-alt:#0f2038; --surface:#142135; --border:#1e3a5a;
+  --text:#dde9f5; --muted:#7a95b0; --accent:#38bdf8; --accent-hi:#7dd3fc;
+  --amber:#f59e0b; --amber-bg:#1a2010; --code-bg:#091520; --code-text:#a8d8f0;
+  --diagram-bg:#0f2038; --diagram-border:#1e3a5a;
+}
+
+/* ── Reset ───────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  display: grid;
+  grid-template-columns: var(--nav-w) 1fr;
+  min-height: 100vh;
+}
+@media (max-width: 780px) {
+  body { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────── */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--bg-alt);
+  border-right: 1px solid var(--border);
+  padding: 2rem 0 2rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.sidebar-logo {
+  display: block;
+  padding: 0 1.4rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.2rem;
+}
+.sidebar-logo .app-name {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.25;
+}
+.sidebar-logo .app-sub {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-top: 0.15rem;
+}
+.nav-section {
+  margin-bottom: 1.2rem;
+}
+.nav-label {
+  display: block;
+  font-size: 0.67rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  padding: 0 1.4rem 0.3rem;
+  font-weight: 600;
+}
+.nav-link {
+  display: block;
+  padding: 0.3rem 1.4rem;
+  font-size: 0.84rem;
+  color: var(--muted);
+  border-left: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.nav-link:hover {
+  color: var(--text);
+  border-left-color: var(--accent);
+  text-decoration: none;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+.nav-link.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── Main content ────────────────────────────────────────────────────── */
+main {
+  max-width: 820px;
+  padding: 3.5rem 3rem 6rem;
+  overflow-x: hidden;
+}
+@media (max-width: 900px) { main { padding: 2rem 1.2rem 4rem; } }
+
+/* ── Typography ──────────────────────────────────────────────────────── */
+h1, h2, h3, h4 {
+  font-family: Georgia, 'Times New Roman', serif;
+  text-wrap: balance;
+  line-height: 1.25;
+  color: var(--text);
+}
+h1 { font-size: 2.4rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+h2 {
+  font-size: 1.45rem; font-weight: 700; margin-top: 3.5rem; margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+h3 { font-size: 1.1rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.6rem; }
+h4 { font-size: 0.95rem; font-weight: 700; margin-top: 1.2rem; margin-bottom: 0.4rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Segoe UI', system-ui, sans-serif; }
+p { margin-bottom: 1rem; }
+ul, ol { padding-left: 1.6rem; margin-bottom: 1rem; }
+li { margin-bottom: 0.3rem; }
+strong { font-weight: 600; color: var(--text); }
+
+/* ── Hero ────────────────────────────────────────────────────────────── */
+.hero {
+  padding-bottom: 2.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.hero-eyebrow {
+  display: inline-block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+.hero-desc {
+  font-size: 1.1rem;
+  color: var(--muted);
+  max-width: 580px;
+  margin-top: 0.6rem;
+}
+.badge-row {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  margin-top: 1.4rem;
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--accent);
+  font-size: 0.75rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-weight: 500;
+}
+.badge.amber {
+  background: color-mix(in srgb, var(--amber) 10%, transparent);
+  border-color: color-mix(in srgb, var(--amber) 30%, transparent);
+  color: var(--amber);
+}
+
+/* ── Callout ─────────────────────────────────────────────────────────── */
+.callout {
+  background: var(--amber-bg);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 8px 8px 0;
+  padding: 0.9rem 1.1rem;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+}
+.callout strong { color: var(--amber); }
+.callout a { color: var(--amber); }
+
+/* ── Diagram container ───────────────────────────────────────────────── */
+.diagram-wrap {
+  background: var(--diagram-bg);
+  border: 1px solid var(--diagram-border);
+  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  margin: 1.5rem 0 2rem;
+  overflow-x: auto;
+}
+.diagram-caption {
+  font-size: 0.76rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 0.8rem;
+  font-style: italic;
+}
+/* Mermaid label tweak for dark background */
+.mermaid { display: block; text-align: center; }
+
+/* ── Code ────────────────────────────────────────────────────────────── */
+pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+  border-radius: 8px;
+  padding: 1.1rem 1.3rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 1rem 0 1.5rem;
+  border: 1px solid #1e3a5a;
+}
+code {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85em;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent-hi);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+}
+pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+
+/* ── Table ───────────────────────────────────────────────────────────── */
+.table-wrap { overflow-x: auto; margin: 1rem 0 1.5rem; border-radius: 8px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+thead { background: var(--bg-alt); }
+th {
+  padding: 0.65rem 1rem; text-align: left;
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--muted); font-weight: 600; font-family: 'Segoe UI', system-ui, sans-serif;
+  border-bottom: 1px solid var(--border);
+}
+td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+.prop { font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; color: var(--accent-hi); }
+.type { color: var(--muted); font-size: 0.8rem; }
+
+/* ── Section divider ─────────────────────────────────────────────────── */
+.section-intro { color: var(--muted); margin-bottom: 1.5rem; font-size: 0.95rem; }
+
+/* ── Theme toggle ────────────────────────────────────────────────────── */
+.theme-toggle {
+  position: fixed; bottom: 1.2rem; right: 1.2rem; z-index: 99;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--muted); border-radius: 8px; padding: 0.4rem 0.7rem;
+  font-size: 0.8rem; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: background 0.15s;
+}
+.theme-toggle:hover { background: var(--bg-alt); }
+
+/* ── Reference block ─────────────────────────────────────────────────── */
+.ref-block {
+  display: flex; align-items: flex-start; gap: 1rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1.1rem 1.3rem; margin: 1.5rem 0;
+}
+.ref-icon { font-size: 1.8rem; flex-shrink: 0; }
+.ref-content .ref-title { font-weight: 600; font-size: 0.95rem; }
+.ref-content .ref-url { font-size: 0.8rem; color: var(--muted); margin-top: 0.1rem; }
+.ref-content .ref-desc { font-size: 0.88rem; margin-top: 0.4rem; color: var(--muted); }
+
+/* ── Feature grid ────────────────────────────────────────────────────── */
+.feature-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem; margin: 1.2rem 0 1.8rem;
+}
+.feature-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1rem 1.1rem;
+}
+.feature-card .fc-icon { font-size: 1.3rem; margin-bottom: 0.4rem; }
+.feature-card .fc-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem; }
+.feature-card .fc-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+/* ── Endpoint card ───────────────────────────────────────────────────── */
+.endpoint {
+  border: 1px solid var(--border); border-radius: 8px; margin: 1rem 0;
+  overflow: hidden;
+}
+.endpoint-header {
+  display: flex; align-items: baseline; gap: 0.7rem;
+  padding: 0.6rem 1rem;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+}
+.method {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent); border-radius: 4px;
+  padding: 0.1rem 0.5rem;
+}
+.endpoint-path {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.88rem; color: var(--text); font-weight: 500;
+}
+.endpoint-body { padding: 0.8rem 1rem; font-size: 0.87rem; }
+.param-row { display: flex; gap: 0.6rem; margin-bottom: 0.25rem; }
+.param-name { font-family: 'Courier New', Courier, monospace; font-size: 0.82rem; color: var(--accent-hi); min-width: 120px; }
+.param-desc { color: var(--muted); font-size: 0.82rem; }
+</style>
+
+<!-- Sidebar -->
+<nav class="sidebar" aria-label="Navigation documentation">
+  <a href="#" class="sidebar-logo">
+    <div class="app-name">Jumeaux de Naissance</div>
+    <div class="app-sub">Documentation technique</div>
+  </a>
+  <div class="nav-section">
+    <span class="nav-label">Introduction</span>
+    <a href="#presentation" class="nav-link">Présentation</a>
+    <a href="#architecture" class="nav-link">Architecture</a>
+    <a href="#prerequis" class="nav-link">Prérequis</a>
+  </div>
+  <div class="nav-section">
+    <span class="nav-label">Base de données</span>
+    <a href="#schema" class="nav-link">Schéma</a>
+    <a href="#proprietes" class="nav-link">Propriétés Wikidata</a>
+    <a href="#monwikidata" class="nav-link">Projet monWikidata</a>
+  </div>
+  <div class="nav-section">
+    <span class="nav-label">Backend PHP</span>
+    <a href="#endpoints" class="nav-link">Endpoints API</a>
+    <a href="#cache" class="nav-link">Système de cache</a>
+    <a href="#createcache" class="nav-link">Génération en masse</a>
+  </div>
+  <div class="nav-section">
+    <span class="nav-label">Frontend</span>
+    <a href="#flux" class="nav-link">Flux de données</a>
+    <a href="#fonctionnalites" class="nav-link">Fonctionnalités</a>
+    <a href="#filtres" class="nav-link">Filtres</a>
+    <a href="#selections" class="nav-link">Sélections</a>
+  </div>
+</nav>
+
+<!-- Main -->
+<main>
+
+  <!-- Hero -->
+  <section class="hero" id="presentation">
+    <span class="hero-eyebrow">Documentation · v1.0</span>
+    <h1>Jumeaux de Naissance</h1>
+    <p class="hero-desc">
+      Application web qui découvre les personnalités historiques nées le même jour que vous,
+      en interrogeant une base MySQL locale alimentée depuis Wikidata.
+    </p>
+    <div class="badge-row">
+      <span class="badge">PHP 8</span>
+      <span class="badge">MySQL</span>
+      <span class="badge">Vanilla JS</span>
+      <span class="badge">D3.js v7</span>
+      <span class="badge">Leaflet</span>
+      <span class="badge amber">Wikidata</span>
+    </div>
+  </section>
+
+  <!-- Architecture -->
+  <section id="architecture">
+    <h2>Architecture générale</h2>
+    <p class="section-intro">
+      L'application suit une architecture classique client-serveur. Le frontend (une seule page HTML)
+      communique avec trois scripts PHP. La base de données MySQL est une copie locale de Wikidata,
+      générée par le projet <strong>monWikidata</strong>.
+    </p>
+    <div class="diagram-wrap">
+      <pre class="mermaid">
+graph TB
+    subgraph Client["Navigateur"]
+        UI["index.html\nVanilla JS · D3 · Leaflet"]
+    end
+    subgraph Serveur["Serveur PHP"]
+        LQ["local-query.php\nRequête jumeaux + occupations"]
+        SP["selections.php\nCRUD sélections"]
+        CC["createCache.php\nGénération cache annuel"]
+    end
+    subgraph Stockage["Stockage local"]
+        DB[("MySQL\nwikidata")]
+        CA[("cache/\nlocal-MM-DD.json")]
+        SF[("selections/\n*.json")]
+    end
+    subgraph Externe["Services externes"]
+        WA["API Wikidata\nimages P18"]
+        OSM["OpenStreetMap\nLeaflet tiles"]
+    end
+
+    UI -->|"GET ?day&month"| LQ
+    UI -->|"action=list/save/load"| SP
+    LQ -->|"TTL 7 jours"| CA
+    LQ --> DB
+    SP --> SF
+    CC -->|"curl par jour"| LQ
+    UI -->|"wbgetentities batch 50"| WA
+    UI --> OSM
+
+    style Client fill:#0e3a5a,stroke:#38bdf8,color:#dde9f5
+    style Serveur fill:#1a2a1a,stroke:#4ade80,color:#dde9f5
+    style Stockage fill:#2a1a3a,stroke:#a78bfa,color:#dde9f5
+    style Externe fill:#2a2010,stroke:#f59e0b,color:#dde9f5
+      </pre>
+      <p class="diagram-caption">Vue d'ensemble de l'architecture — client, serveur, stockage et services externes</p>
+    </div>
+  </section>
+
+  <!-- Prérequis -->
+  <section id="prerequis">
+    <h2>Prérequis</h2>
+    <ul>
+      <li><strong>PHP ≥ 8.0</strong> avec l'extension PDO MySQL</li>
+      <li><strong>MySQL ≥ 5.7</strong> ou MariaDB ≥ 10.4</li>
+      <li>La base de données Wikidata locale (voir <a href="#monwikidata">monWikidata</a>)</li>
+      <li>Un fichier <code>config.php</code> à la racine du projet</li>
+      <li>Accès Internet pour les tuiles Leaflet (OpenStreetMap) et les images Wikidata</li>
+    </ul>
+    <h3>config.php</h3>
+    <pre><code>&lt;?php
+return [
+    'host'    => 'localhost',
+    'port'    => 3306,
+    'dbname'  => 'wikidata',
+    'charset' => 'utf8mb4',
+    'user'    => 'root',
+    'pass'    => 'motdepasse',
+];</code></pre>
+  </section>
+
+  <!-- Schéma BDD -->
+  <section id="schema">
+    <h2>Schéma de la base de données</h2>
+    <p class="section-intro">
+      La base est une extraction partielle de Wikidata structurée en cinq tables.
+      Elle est produite et maintenue par le projet <strong>monWikidata</strong>.
+    </p>
+    <div class="diagram-wrap">
+      <pre class="mermaid">
+erDiagram
+    wikidata_entities {
+        varchar id PK "QID ex: Q42"
+        varchar label "Nom principal"
+        text description "Courte description"
+        int sitelinks "Nb de liens sitelinks"
+        int statements "Nb de déclarations"
+        int externalIds "Nb d'ID externes"
+        varchar wikipedia "lang_Article"
+    }
+    wikidata_properties {
+        int pk PK
+        varchar entity_id FK "→ wikidata_entities.id"
+        varchar property "P569, P106, P18..."
+        varchar value_id "QID cible (entité)"
+        varchar value_str "Valeur texte ou date"
+    }
+    wikidata_geos {
+        varchar id PK "QID lieu"
+        varchar label "Nom du lieu"
+        float latitude
+        float longitude
+    }
+    wikidata_occupations {
+        varchar id PK
+        varchar label "Nom de l'occupation"
+        varchar labelFr
+        text description
+        text subclass_of "IDs séparés par |"
+    }
+    wikidata_nodes {
+        varchar id PK
+        varchar label "Label du nœud"
+        varchar path
+        int depth
+    }
+
+    wikidata_entities ||--o{ wikidata_properties : "entity_id"
+    wikidata_geos ||--o{ wikidata_properties : "value_id (P19=lieu)"
+    wikidata_occupations ||--o{ wikidata_properties : "value_id (P106=métier)"
+      </pre>
+      <p class="diagram-caption">Schéma entité-relation de la base MySQL Wikidata locale</p>
+    </div>
+  </section>
+
+  <!-- Propriétés Wikidata -->
+  <section id="proprietes">
+    <h2>Propriétés Wikidata utilisées</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Propriété</th><th>Libellé</th><th>Usage dans l'app</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prop">P569</td><td>Date de naissance</td><td>Filtrage par jour/mois (<code>SUBSTR(value_str,7,5)</code>)</td></tr>
+          <tr><td class="prop">P737</td><td>Influencé par</td><td>Calcul de l'indice d'importance (<code>nbInflu</code>)</td></tr>
+          <tr><td class="prop">P106</td><td>Occupation / métier</td><td>Classification par catégorie, histogramme</td></tr>
+          <tr><td class="prop">P18</td><td>Image</td><td>Photo affichée dans la carte, chargée via Wikimedia Commons</td></tr>
+          <tr><td class="prop">P19</td><td>Lieu de naissance</td><td>Géolocalisation sur la carte Leaflet</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Calcul de l'indice d'importance</h3>
+    <p>L'indice combine la richesse de la notice et l'influence de la personne :</p>
+    <pre><code>importance = (sitelinks + statements + externalIds) × (nbInflu + 1)</code></pre>
+    <p>Plus une entité a de liens vers d'autres Wikipédias, de déclarations, d'identifiants
+    externes et de personnes qui l'ont citée comme source d'influence, plus son score est élevé.</p>
+  </section>
+
+  <!-- monWikidata -->
+  <section id="monwikidata">
+    <h2>Projet monWikidata</h2>
+    <p class="section-intro">
+      La base de données locale est construite et alimentée par le projet
+      <strong>monWikidata</strong>, qui télécharge, transforme et indexe les données
+      Wikidata dans MySQL.
+    </p>
+    <div class="ref-block">
+      <div class="ref-icon">🔗</div>
+      <div class="ref-content">
+        <div class="ref-title">samszo / monWikidata</div>
+        <div class="ref-url"><a href="https://github.com/samszo/monWikidata" target="_blank">https://github.com/samszo/monWikidata</a></div>
+        <div class="ref-desc">
+          Scripts Python et SQL pour extraire les données Wikidata (entités, propriétés,
+          géolocalisation, occupations) et les charger dans une base MySQL locale.
+          Jumeaux de Naissance consomme cette base en lecture seule.
+        </div>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>Dépendance :</strong> sans la base produite par monWikidata, les requêtes
+      de <code>local-query.php</code> échoueront. Consultez le README de monWikidata
+      pour les instructions d'installation et de mise à jour.
+    </div>
+  </section>
+
+  <!-- Endpoints -->
+  <section id="endpoints">
+    <h2>Endpoints PHP</h2>
+
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method">GET</span>
+        <span class="endpoint-path">local-query.php</span>
+      </div>
+      <div class="endpoint-body">
+        <p>Retourne les personnalités nées un jour/mois donné, avec leurs occupations. Utilise un cache JSON par date (TTL 7 jours).</p>
+        <div class="param-row"><span class="param-name">day</span><span class="param-desc">Entier 1–31 — jour du mois</span></div>
+        <div class="param-row"><span class="param-name">month</span><span class="param-desc">Entier 1–12 — mois</span></div>
+        <p style="margin-top:0.6rem;font-size:0.82rem;color:var(--muted)">
+          Réponse : <code>{ "jumeaux": [...], "occupations": [...] }</code><br>
+          En-tête : <code>X-Cache: HIT | MISS</code>
+        </p>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method">GET</span>
+        <span class="endpoint-path">selections.php?action=list</span>
+      </div>
+      <div class="endpoint-body">
+        <p>Liste toutes les sélections enregistrées dans <code>/selections/</code>.</p>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method">POST</span>
+        <span class="endpoint-path">selections.php?action=save&amp;file={nom}</span>
+      </div>
+      <div class="endpoint-body">
+        <p>Enregistre le corps JSON (sélection complète) dans <code>/selections/{nom}.json</code>.</p>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method">GET</span>
+        <span class="endpoint-path">selections.php?action=load&amp;file={nom}</span>
+      </div>
+      <div class="endpoint-body">
+        <p>Charge et retourne le contenu d'un fichier de sélection.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cache -->
+  <section id="cache">
+    <h2>Système de cache</h2>
+    <p class="section-intro">
+      Chaque requête <code>local-query.php</code> est mise en cache dans
+      <code>cache/local-MM-DD.json</code> avec un TTL de 7 jours, pour éviter
+      de solliciter MySQL à chaque affichage.
+    </p>
+    <div class="diagram-wrap">
+      <pre class="mermaid">
+flowchart LR
+    A([Requête\nday=D&amp;month=M]) --> B{Fichier\ncache/MM-DD.json\nexiste ?}
+    B -->|Non| D[Requête MySQL\njumeaux + occupations]
+    B -->|Oui| C{TTL &lt; 7 jours ?}
+    C -->|Oui| HIT["X-Cache: HIT\nreadfile()"]
+    C -->|Non| D
+    D --> E[Normalise\nle JSON]
+    E --> F["Écrit\ncache/MM-DD.json"]
+    F --> MISS["X-Cache: MISS\necho JSON"]
+
+    style HIT fill:#1a3a1a,stroke:#4ade80,color:#dde9f5
+    style MISS fill:#1a2a3a,stroke:#38bdf8,color:#dde9f5
+      </pre>
+      <p class="diagram-caption">Logique de cache dans local-query.php</p>
+    </div>
+  </section>
+
+  <!-- createCache -->
+  <section id="createcache">
+    <h2>Génération en masse du cache</h2>
+    <p class="section-intro">
+      <code>createCache.php</code> itère sur les 365/366 jours de l'année et appelle
+      <code>local-query.php</code> via <code>curl</code> pour chaque date, pré-remplissant
+      ainsi l'intégralité du cache.
+    </p>
+    <div class="diagram-wrap">
+      <pre class="mermaid">
+flowchart TD
+    S([Démarrage]) --> F{force=oui ?}
+    F -->|Non| C{Cache &lt; 7j ?}
+    C -->|Oui| SK[Ignorer ↩]
+    C -->|Non| CU
+    F -->|Oui| CU["curl local-query.php\n?day=D&amp;month=M"]
+    CU -->|200 OK| W["Cache écrit\ncache/MM-DD.json ✓"]
+    CU -->|Erreur| ER["Log erreur ✕"]
+    W --> N{Jour suivant}
+    SK --> N
+    ER --> N
+    N -->|Jours restants| F
+    N -->|366 jours traités| E([Terminé])
+      </pre>
+      <p class="diagram-caption">Boucle de génération du cache annuel</p>
+    </div>
+    <h4>Utilisation</h4>
+    <pre><code># Tous les jours manquants ou expirés
+php createCache.php
+
+# Forcer la regénération complète
+php createCache.php --force
+
+# Seulement le mois de juin
+php createCache.php --month=6
+
+# Via navigateur
+http://monserveur/createCache.php?force=1&amp;month=6</code></pre>
+  </section>
+
+  <!-- Flux de données -->
+  <section id="flux">
+    <h2>Flux de données — recherche</h2>
+    <div class="diagram-wrap">
+      <pre class="mermaid">
+sequenceDiagram
+    actor User as Utilisateur
+    participant UI as index.html
+    participant PHP as local-query.php
+    participant CA as cache/MM-DD.json
+    participant DB as MySQL Wikidata
+    participant API as API Wikidata
+
+    User->>UI: Saisit jour + mois, clique Rechercher
+    UI->>PHP: GET ?day=8&amp;month=8
+    PHP->>CA: Fichier existe, TTL valide ?
+    alt Cache valide (HIT)
+        CA-->>PHP: JSON brut
+        PHP-->>UI: JSON + X-Cache: HIT
+    else Cache absent ou expiré (MISS)
+        PHP->>DB: SELECT jumeaux + occupations WHERE SUBSTR(P569,7,5)='08-08'
+        DB-->>PHP: Lignes résultats
+        PHP->>CA: Écrit cache/08-08.json
+        PHP-->>UI: JSON + X-Cache: MISS
+    end
+    UI->>UI: Groupe par année, calcule importance
+    UI->>UI: Affiche sections années + stats
+    loop Batch images (50 QIDs / 10s)
+        UI->>API: wbgetentities?ids=Q1|Q2|...|Q50&props=claims
+        API-->>UI: URLs fichiers P18
+        UI->>UI: Charge images Wikimedia Commons
+    end
+    UI->>UI: Met à jour marqueurs Leaflet
+      </pre>
+      <p class="diagram-caption">Flux complet d'une recherche — du clic jusqu'à l'affichage des images</p>
+    </div>
+  </section>
+
+  <!-- Fonctionnalités -->
+  <section id="fonctionnalites">
+    <h2>Fonctionnalités</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="fc-icon">🔍</div>
+        <div class="fc-title">Recherche par date</div>
+        <div class="fc-desc">Saisie jour + mois + plage d'années. Résultats groupés par année, triés par importance décroissante.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon">📊</div>
+        <div class="fc-title">Statistiques</div>
+        <div class="fc-desc">Nombre total de personnalités, année la plus riche, moyenne par an, top 5 années.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon">🗺</div>
+        <div class="fc-title">Carte Leaflet</div>
+        <div class="fc-desc">Carte interactive OpenStreetMap. Un zoom filtre les cartes aux entités géolocalisées visibles.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon">🖼</div>
+        <div class="fc-title">Images Wikidata</div>
+        <div class="fc-desc">Chargement groupé (50 entités / requête, 10 s d'intervalle). Bouton priorité par année.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon">⭐</div>
+        <div class="fc-title">Sélections</div>
+        <div class="fc-desc">Sélectionner des personnalités, sauvegarder sur le serveur, exporter en CSV / JSON / QMD / HTML.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon">🗂</div>
+        <div class="fc-title">Vue par catégorie</div>
+        <div class="fc-desc">Bascule entre la vue par année et la vue par catégorie (politiciens, artistes, scientifiques…).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filtres -->
+  <section id="filtres">
+    <h2>Filtres</h2>
+    <p class="section-intro">
+      Le panneau Filtres (collapsible) regroupe quatre filtres cumulatifs appliqués
+      en temps réel aux cartes affichées.
+    </p>
+    <div class="diagram-wrap">
+      <pre class="mermaid">
+flowchart LR
+    CARDS["Toutes les cartes"]
+    FC["Filtre\ncélébrité\n(slider bleu)"]
+    FA["Filtre\nannées\n(slider orange)"]
+    FCAT["Filtre\ncatégorie\n(menu)"]
+    FM["Filtre\ncarte\n(zoom Leaflet)"]
+    VIS["Cartes visibles"]
+
+    CARDS --> FC --> FA --> FCAT --> FM --> VIS
+
+    style FC fill:#0e3a5a,stroke:#38bdf8,color:#dde9f5
+    style FA fill:#2a1a00,stroke:#f59e0b,color:#dde9f5
+    style FCAT fill:#1a2a1a,stroke:#4ade80,color:#dde9f5
+    style FM fill:#2a1a2a,stroke:#a78bfa,color:#dde9f5
+      </pre>
+      <p class="diagram-caption">Les quatre filtres sont appliqués en cascade sur chaque appel à <code>applyFilters()</code></p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Filtre</th><th>Source</th><th>Comportement</th></tr></thead>
+        <tbody>
+          <tr><td>Indice de célébrité</td><td>Slider double bleu</td><td>Masque les cartes dont le score est hors de la plage sélectionnée</td></tr>
+          <tr><td>Années</td><td>Slider double orange</td><td>Masque les sections d'années hors de la plage, les bornes sont calculées depuis les données</td></tr>
+          <tr><td>Catégorie</td><td>Menu déroulant</td><td>Filtre par catégorie déduite des occupations Wikidata (P106)</td></tr>
+          <tr><td>Carte géo</td><td>Zoom Leaflet</td><td>Si zoom > niveau initial, ne conserve que les entités géolocalisées dans le viewport</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Sélections -->
+  <section id="selections">
+    <h2>Sélections</h2>
+    <p class="section-intro">
+      Le système de sélections permet de constituer un corpus de personnalités,
+      de le sauvegarder et de l'exporter dans plusieurs formats.
+    </p>
+    <div class="diagram-wrap">
+      <pre class="mermaid">
+stateDiagram-v2
+    [*] --> Recherche
+    Recherche --> Sélection : Cocher des cartes
+    Sélection --> Sélection : Ajouter / retirer
+    Sélection --> Export : CSV / QMD / HTML
+    Sélection --> Sauvegarde : Titre + auteur → POST selections.php
+    Sauvegarde --> [*]
+    Export --> [*]
+    PanneauSélections --> Chargement : Cliquer "Charger"
+    PanneauSélections --> ChargementFichier : 📂 Fichier local JSON
+    Chargement --> Affichage : Masque les résultats de recherche
+    ChargementFichier --> Affichage
+    Affichage --> Recherche : ✕ Fermer
+      </pre>
+      <p class="diagram-caption">Cycle de vie d'une sélection — de la constitution à l'export ou au rechargement</p>
+    </div>
+    <h3>Format JSON d'une sélection</h3>
+    <pre><code>{
+  "recherche": {
+    "titre":       "Mes jumeaux du 8 août",
+    "auteur":      "Samuel Szoniecky",
+    "date":        "08/08",
+    "periodeDebut": 2020,
+    "periodeFin":  1000,
+    "exportedAt":  "2026-08-08",
+    "total":       12
+  },
+  "items": [
+    {
+      "qid":         "Q42",
+      "name":        "Douglas Adams",
+      "desc":        "romancier et scénariste britannique",
+      "year":        1952,
+      "wpUrl":       "https://fr.wikipedia.org/wiki/Douglas_Adams",
+      "wikidataUrl": "https://www.wikidata.org/wiki/Q42"
+    }
+  ]
+}</code></pre>
+  </section>
+
+</main>
+
+<button class="theme-toggle" onclick="(function(){const r=document.documentElement,t=r.getAttribute('data-theme');r.setAttribute('data-theme',t==='dark'?'light':'dark')})()">
+  ☀︎ / ☽ Thème
+</button>
+
+<script>
+// Highlight active nav link on scroll
+const sections = document.querySelectorAll('section[id]');
+const links    = document.querySelectorAll('.nav-link');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => obs.observe(s));
+</script>

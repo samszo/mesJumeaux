@@ -3,24 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mes Jumeaux de Naissance</title>
+  <title>Jumeaux de Naissance</title>
   <script src="assets/wikidata-sdk.min.js"></script>
   <script src="assets/d3.v7.min.js"></script>
   <script src="assets/cal-heatmap.min.js"></script>
   <script src="assets/popper.min.js"></script>
   <script src="assets/Tooltip.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link rel="stylesheet" href="assets/cal-heatmap.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="assets/main.css">
+  <style>
+    /* Utilitaire global hidden — exclut les panneaux avec animation transform */
+    .hidden:not(.year-nav):not(.archives-panel) { display: none !important; }
+    .header-three-columns { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem; }
+    .header-brand { display: flex; align-items: center; justify-content: center; }
+    .header-content { text-align: center; }
+    .filter-map-container { height: 300px; width: 100%; border-top: 1px solid #1e293b; }
+    .filters-toggle-bar { display: flex; align-items: center; gap: .8rem; padding: .4rem 1rem; border-top: 1px solid #1e293b; }
+    .btn-filters-toggle { background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: .3rem .9rem; border-radius: 8px; font-size: .85rem; cursor: pointer; }
+    .btn-filters-toggle:hover { background: #334155; color: #e2e8f0; }
+    .btn-filters-toggle.active { background: #1e3a5f; border-color: #38bdf8; color: #38bdf8; }
+    .map-filter-badge { font-size: .78rem; color: #f59e0b; background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.4); border-radius: 999px; padding: .15rem .7rem; }
+    .filters-panel-collapsible { border-top: 1px solid #1e293b; }
+    .filters-panel-collapsible .filters-bar { border-top: none; }
+    .leaflet-popup-content-wrapper { background: #1e293b; color: #e2e8f0; border: 1px solid #334155; }
+    .leaflet-popup-tip { background: #1e293b; }
+    .leaflet-tooltip { background: #1e293b; color: #e2e8f0; border: 1px solid #334155; font-size: .78rem; }
+  </style>
 </head>
 <body>
 
 <div id="top-bar">
 <header>
-  <h1>Mes Jumeaux de Naissance</h1>
-  <p>Découvrez les personnalités nées le même jour que vous</p>
-  <div class="header-actions">
-    <button class="btn-archives" onclick="toggleSelections()">⭐ Sélections</button>
-    <button class="btn-archives" id="groupToggleBtn" onclick="toggleGroupByCategory()">🗂 Par catégorie</button>
+  <div class="header-three-columns">
+    <div class="header-brand">
+      <a href="https://wikimediafoundation.org/fr/give/" target="_blank"><img src="assets/donWikipedia.png" class="header-img" alt="Faire un don à la Fondation Wikipedia" /></a>
+      <a href="https://github.com/samszo/mesJumeaux"  target="_blank"><img src="assets/Octicons-mark-github.svg" class="header-img" alt="source de l'application" /></a>      
+    </div>
+    <div class="header-content">
+      <h1>Jumeaux de Naissance</h1>
+      <p>Découvrez les personnalités nées le même jour</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-archives" onclick="toggleSelections()">⭐ Sélections</button>
+      <button class="btn-archives" id="groupToggleBtn" onclick="toggleGroupByCategory()">🗂 Par catégorie</button>
+    </div>
   </div>
 </header>
 
@@ -61,24 +89,41 @@
 
 </div>
 
-<div class="filters-bar" id="filters-bar">
-  <div class="field celeb-slider-field">
-    <label>Indice célébrité : <span id="celebMinValue">0</span> – <span id="celebMaxValue">0</span></label>
-    <div class="celeb-slider" id="celebSlider">
-      <div class="celeb-slider-track"></div>
-      <div class="celeb-slider-range" id="celebSliderRange"></div>
-      <input type="range" id="celebMinRange" class="celeb-slider-input" min="0" max="1" value="0" oninput="onCelebRangeInput('min')">
-      <input type="range" id="celebMaxRange" class="celeb-slider-input" min="0" max="1" value="1" oninput="onCelebRangeInput('max')">
+<div class="filters-toggle-bar">
+  <button id="filters-toggle-btn" class="btn-filters-toggle" onclick="toggleFiltersPanel()">🔍 Filtres ▾</button>
+  <span id="map-filter-badge" class="map-filter-badge hidden">🗺 Filtre carte actif</span>
+</div>
+
+<div id="filters-panel" class="filters-panel-collapsible hidden">
+  <div class="filters-bar" id="filters-bar">
+    <div class="field celeb-slider-field">
+      <label>Indice célébrité : <span id="celebMinValue">0</span> – <span id="celebMaxValue">0</span></label>
+      <div class="celeb-slider" id="celebSlider">
+        <div class="celeb-slider-track"></div>
+        <div class="celeb-slider-range" id="celebSliderRange"></div>
+        <input type="range" id="celebMinRange" class="celeb-slider-input" min="0" max="1" value="0" oninput="onCelebRangeInput('min')">
+        <input type="range" id="celebMaxRange" class="celeb-slider-input" min="0" max="1" value="1" oninput="onCelebRangeInput('max')">
+      </div>
+    </div>
+    <div class="field celeb-slider-field">
+      <label>Années : <span id="yearMinValue">–</span> – <span id="yearMaxValue">–</span></label>
+      <div class="celeb-slider" id="yearSlider">
+        <div class="celeb-slider-track"></div>
+        <div class="celeb-slider-range year-slider-range" id="yearSliderRange"></div>
+        <input type="range" id="yearMinRange" class="celeb-slider-input year-slider-input" min="0" max="1" value="0" oninput="onYearRangeInput('min')">
+        <input type="range" id="yearMaxRange" class="celeb-slider-input year-slider-input" min="0" max="1" value="1" oninput="onYearRangeInput('max')">
+      </div>
+    </div>
+    <div class="field">
+      <label>Catégorie</label>
+      <select id="categoryFilterSelect" onchange="applyFilters()"></select>
+    </div>
+    <div class="field">
+      <label>&nbsp;</label>
+      <button class="btn-archives" onclick="resetFilters()">✕ Réinitialiser les filtres</button>
     </div>
   </div>
-  <div class="field">
-    <label>Catégorie</label>
-    <select id="categoryFilterSelect" onchange="applyFilters()"></select>
-  </div>
-  <div class="field">
-    <label>&nbsp;</label>
-    <button class="btn-archives" onclick="resetFilters()">✕ Réinitialiser les filtres</button>
-  </div>
+  <div id="filter-map" class="filter-map-container"></div>
 </div>
 
 <div id="load-count" style="display:none;text-align:center;color:#64748b;font-size:0.85rem;margin:0.5rem 0"></div>
@@ -124,6 +169,12 @@
   <div class="archives-header">
     <span>⭐ Sélections enregistrées</span>
     <button onclick="toggleSelections()">✕</button>
+  </div>
+  <div class="selections-actions-bar">
+    <label class="btn-sel-export" title="Charger un fichier JSON local" style="cursor:pointer">
+      📂 Charger un fichier…
+      <input type="file" id="sel-file-input" accept=".json" style="display:none" onchange="loadSelectionFromFile(event)">
+    </label>
   </div>
   <ul id="selections-list" style="list-style-type: none;"><li style="color:#475569;padding:0.5rem 0.8rem;font-size:0.85rem">Chargement…</li></ul>
 </div>
@@ -294,6 +345,7 @@
     running: false, allResults: [],
     day: 17, month: 6, startYear: 2025, endYear: 1800,
     viewMode: 'year', cardsByQid: new Map(),
+    mapFilterIds: null, mapPoints: [],
   };
 
   // ── Catégories de personnes (classification par mots-clés) ────────────────
@@ -436,13 +488,56 @@
     document.getElementById('celebMaxValue').textContent = maxV.toLocaleString('fr-FR');
   }
 
+  // ── Slider années ────────────────────────────────────────────────────────
+  function setYearSliderBounds(min, max) {
+    const minRange = document.getElementById('yearMinRange');
+    const maxRange = document.getElementById('yearMaxRange');
+    for (const r of [minRange, maxRange]) { r.min = min; r.max = max; r.step = 1; }
+    minRange.value = min;
+    maxRange.value = max;
+    updateYearSliderUI();
+  }
+
+  function onYearRangeInput(which) {
+    const minRange = document.getElementById('yearMinRange');
+    const maxRange = document.getElementById('yearMaxRange');
+    if (which === 'min' && +minRange.value > +maxRange.value) minRange.value = maxRange.value;
+    if (which === 'max' && +maxRange.value < +minRange.value) maxRange.value = minRange.value;
+    updateYearSliderUI();
+    applyFilters();
+  }
+
+  function updateYearSliderUI() {
+    const minRange = document.getElementById('yearMinRange');
+    const maxRange = document.getElementById('yearMaxRange');
+    const lo = +minRange.min, hi = +minRange.max, span = (hi - lo) || 1;
+    const pctMin = (+minRange.value - lo) / span * 100;
+    const pctMax = (+maxRange.value - lo) / span * 100;
+    document.getElementById('yearSliderRange').style.left  = pctMin + '%';
+    document.getElementById('yearSliderRange').style.right = (100 - pctMax) + '%';
+    document.getElementById('yearMinValue').textContent = minRange.value || '–';
+    document.getElementById('yearMaxValue').textContent = maxRange.value || '–';
+  }
+
+  function isYearFilterActive() {
+    const minRange = document.getElementById('yearMinRange');
+    const maxRange = document.getElementById('yearMaxRange');
+    return +minRange.value > +minRange.min || +maxRange.value < +maxRange.max;
+  }
+
   function resetFilters() {
     const minRange = document.getElementById('celebMinRange');
     const maxRange = document.getElementById('celebMaxRange');
     minRange.value = minRange.min;
     maxRange.value = maxRange.max;
     updateCelebSliderUI();
+    const yMin = document.getElementById('yearMinRange');
+    const yMax = document.getElementById('yearMaxRange');
+    yMin.value = yMin.min;
+    yMax.value = yMax.max;
+    updateYearSliderUI();
     document.getElementById('categoryFilterSelect').value = '';
+    state.mapFilterIds = null;
     applyFilters();
   }
 
@@ -477,12 +572,23 @@
     const minVal = +document.getElementById('celebMinRange').value;
     const maxVal = +document.getElementById('celebMaxRange').value;
     const cat    = document.getElementById('categoryFilterSelect').value;
+    const yMin   = +document.getElementById('yearMinRange').value;
+    const yMax   = +document.getElementById('yearMaxRange').value;
 
     for (const card of state.cardsByQid.values()) {
       const score = parseFloat(card.dataset.score) || 0;
       let visible = true;
       if (score < minVal || score > maxVal) visible = false;
       if (cat && card.dataset.category !== cat) visible = false;
+      if (isYearFilterActive()) {
+        const y = parseInt(card.dataset.year);
+        if (!isNaN(y) && (y < yMin || y > yMax)) visible = false;
+      }
+      if (state.mapFilterIds !== null) {
+        const lat = card.dataset.lat;
+        const lng = card.dataset.lng;
+        if (lat && lng && !state.mapFilterIds.has(card.dataset.qid)) visible = false;
+      }
       card.classList.toggle('filtered-out', !visible);
     }
 
@@ -630,6 +736,9 @@
     card.dataset.qid = qid;
     card.dataset.category = category.key;
     card.dataset.score = score;
+    card.dataset.year = year;
+    card.dataset.lat  = r.lat  ?? '';
+    card.dataset.lng  = r.lng  ?? '';
     card.innerHTML = `
       <label class="card-select" title="Sélectionner">
         <input type="checkbox" class="card-checkbox" data-qid="${escapeHtml(qid)}">
@@ -680,7 +789,7 @@
 
     const grid = document.createElement('div');
     grid.className = 'grid';
-    grid.dataset.naturalOrder = results.map(r => r.id).join('|');
+    grid.dataset.naturalOrder = results.map(r => r.label).join('|');
 
     for (const r of results) {
       grid.appendChild(createCard(r, year));
@@ -731,9 +840,9 @@
 
       const grid = document.createElement('div');
       grid.className = 'grid';
-      grid.dataset.naturalOrder = items.map(r => r.item.value).join('|');
+      grid.dataset.naturalOrder = items.map(r => r.label).join('|');
       for (const r of items) {
-        const cardEl = state.cardsByQid.get(r.item.value);
+        const cardEl = state.cardsByQid.get(r.id);
         if (cardEl) grid.appendChild(cardEl);
       }
       section.appendChild(grid);
@@ -772,9 +881,9 @@
 
       const grid = document.createElement('div');
       grid.className = 'grid';
-      grid.dataset.naturalOrder = items.map(r => r.item.value).join('|');
+      grid.dataset.naturalOrder = items.map(r => r.label).join('|');
       for (const r of items) {
-        const cardEl = state.cardsByQid.get(r.item.value);
+        const cardEl = state.cardsByQid.get(r.id);
         if (cardEl) grid.appendChild(cardEl);
       }
       section.appendChild(grid);
@@ -956,6 +1065,25 @@
     document.getElementById('searchBtn').disabled = false;
     document.getElementById('stop-bar').style.display = 'none';
     clearStatus();
+
+    // Bornes du slider d'années
+    const allYears = state.allResults.map(r => r.year).filter(Boolean);
+    if (allYears.length) setYearSliderBounds(Math.min(...allYears), Math.max(...allYears));
+
+    state.mapFilterIds = null;
+
+    // Collecte les points géo pour la carte Leaflet
+    state.mapPoints = [];
+    for (const { year, items } of state.allResults) {
+      for (const r of items) {
+        const lat = parseFloat(r.lat);
+        const lng = parseFloat(r.lng);
+        if (!isNaN(lat) && !isNaN(lng))
+          state.mapPoints.push({ id: r.id, label: r.label, lieu: r.lieu, year, lat, lng });
+      }
+    }
+    updateLeafletMarkers();
+
     renderCalHeatmap();
     renderStats();
   }
@@ -1006,9 +1134,88 @@
             </div>
             <span class="stats-top-count">${r.items.length}</span>
           </div>`).join('')}
-      </div>`;
+      </div>
+`;
     el.classList.remove('hidden');
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── Panneau filtres + carte Leaflet ─────────────────────────────────────
+  let leafletMap = null;
+  let leafletLayer = null;
+  let _leafletInitZoom = 2;
+
+  function toggleFiltersPanel() {
+    const panel = document.getElementById('filters-panel');
+    const btn   = document.getElementById('filters-toggle-btn');
+    const isOpen = !panel.classList.contains('hidden');
+    panel.classList.toggle('hidden', isOpen);
+    btn.classList.toggle('active', !isOpen);
+    btn.textContent = isOpen ? '🔍 Filtres ▾' : '🔍 Filtres ▲';
+    if (!isOpen) {
+      if (!leafletMap) initLeafletMap();
+      else setTimeout(() => leafletMap.invalidateSize(), 50);
+    }
+  }
+
+  function initLeafletMap() {
+    leafletMap = L.map('filter-map', { zoomControl: true }).setView([20, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 18,
+    }).addTo(leafletMap);
+    leafletMap.on('moveend zoomend', onLeafletMoveEnd);
+    if (state.mapPoints.length) _populateLeafletMarkers();
+  }
+
+  function updateLeafletMarkers() {
+    if (!leafletMap) return;
+    _populateLeafletMarkers();
+  }
+
+  function _populateLeafletMarkers() {
+    if (leafletLayer) { leafletLayer.clearLayers(); }
+    else { leafletLayer = L.layerGroup().addTo(leafletMap); }
+
+    for (const pt of state.mapPoints) {
+      L.circleMarker([pt.lat, pt.lng], {
+        radius: 6,
+        color: '#0ea5e9',
+        fillColor: '#38bdf8',
+        fillOpacity: 0.8,
+        weight: 1.5,
+      })
+        .bindTooltip(`<strong>${pt.label}</strong><br>${pt.lieu || ''} · ${pt.year}`, { sticky: true })
+        .on('click', () => showYearFromTimeline(pt.year))
+        .addTo(leafletLayer);
+    }
+
+    if (state.mapPoints.length) {
+      const bounds = L.latLngBounds(state.mapPoints.map(p => [p.lat, p.lng]));
+      leafletMap.fitBounds(bounds, { padding: [30, 30], maxZoom: 5 });
+      _leafletInitZoom = leafletMap.getZoom();
+    }
+    // Réinitialise le filtre carte après un nouveau chargement
+    state.mapFilterIds = null;
+    document.getElementById('map-filter-badge').classList.add('hidden');
+  }
+
+  function onLeafletMoveEnd() {
+    const zoom = leafletMap.getZoom();
+    const badge = document.getElementById('map-filter-badge');
+    if (zoom <= _leafletInitZoom) {
+      state.mapFilterIds = null;
+      badge.classList.add('hidden');
+    } else {
+      const bounds = leafletMap.getBounds();
+      const visibleIds = new Set();
+      for (const pt of state.mapPoints) {
+        if (bounds.contains([pt.lat, pt.lng])) visibleIds.add(pt.id);
+      }
+      state.mapFilterIds = visibleIds;
+      badge.classList.remove('hidden');
+    }
+    applyFilters();
   }
 
   function showStatus(type, msg) {
@@ -1141,6 +1348,56 @@
     if (!panel.classList.contains('hidden')) loadSelectionsList();
   }
 
+  function loadSelectionFromFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        document.getElementById('selections-panel').classList.add('hidden');
+        document.getElementById('sel-file-input').value = '';
+
+        const meta  = data.recherche || {};
+        const items = data.items     || [];
+
+        document.getElementById('selection-view-title').textContent =
+          meta.titre || `Sélection du ${meta.date || ''}`;
+        document.getElementById('selection-view-meta').textContent = [
+          meta.auteur     ? `par ${meta.auteur}` : '',
+          meta.date       ? `📅 ${meta.date}` : '',
+          (meta.periodeDebut && meta.periodeFin) ? `${meta.periodeDebut}–${meta.periodeFin}` : '',
+          `${items.length} personnalité${items.length > 1 ? 's' : ''}`,
+          meta.exportedAt ? `enregistré le ${meta.exportedAt}` : '',
+        ].filter(Boolean).join(' · ');
+
+        const grid = document.getElementById('selection-view-grid');
+        grid.innerHTML = '';
+        for (const it of items) {
+          const wp = it.wpUrl       ? `<a class="card-link" href="${escapeHtml(it.wpUrl)}" target="_blank" rel="noopener">Wikipedia →</a>` : '';
+          const wd = it.wikidataUrl ? `<a class="card-link" href="${escapeHtml(it.wikidataUrl)}" target="_blank" rel="noopener">Wikidata →</a>` : '';
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <div class="card-name">${escapeHtml(it.name || '')}</div>
+            ${it.desc ? `<div class="card-desc">${escapeHtml(it.desc)}</div>` : ''}
+            ${it.year ? `<div class="card-date"><span>${it.year}</span></div>` : ''}
+            <img id="${it.qid}-img" />
+            <div style="margin-top:auto;display:flex;gap:0.6rem;flex-wrap:wrap">${wp}${wd}</div>`;
+          grid.appendChild(card);
+          if (it.qid) imageRateLimiter.enqueue({ id: it.qid, image: null }, document.getElementById(it.qid + '-img'));
+        }
+        document.getElementById('results').classList.add('hidden');
+        document.getElementById('selection-view').classList.remove('hidden');
+        document.getElementById('selection-view').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        showToast(`✅ ${file.name} chargé (${items.length} entrée${items.length > 1 ? 's' : ''})`);
+      } catch (err) {
+        showToast(`❌ Fichier invalide : ${err.message}`);
+      }
+    };
+    reader.readAsText(file);
+  }
+
   async function loadSelectionsList() {
     const ul = document.getElementById('selections-list');
     ul.innerHTML = '<li style="color:#475569;padding:0.5rem 0.8rem;font-size:0.85rem">Chargement…</li>';
@@ -1207,6 +1464,7 @@
         grid.appendChild(card);
         imageRateLimiter.enqueue(it.qid,document.getElementById(it.qid + '-img'))
       }
+      document.getElementById('results').classList.add('hidden');
       document.getElementById('selection-view').classList.remove('hidden');
       document.getElementById('selection-view').scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (e) {
@@ -1217,6 +1475,7 @@
   function closeSelectionView() {
     document.getElementById('selection-view').classList.add('hidden');
     document.getElementById('selection-view-grid').innerHTML = '';
+    document.getElementById('results').classList.remove('hidden');
   }
 
   // ── Utilitaires ──────────────────────────────────────────────────────────
@@ -1373,6 +1632,7 @@
 
   populateCategoryFilterOptions();
   updateCelebSliderUI();
+  updateYearSliderUI();
 
   // ── Paramètres URL ───────────────────────────────────────────────────────
   (function initFromUrl() {

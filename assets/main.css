@@ -1,5 +1,8 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Utilitaire global — ne pas appliquer aux panneaux qui utilisent transform pour l'animation */
+.hidden:not(.year-nav):not(.archives-panel) { display: none !important; }
+
     body {
       font-family: 'Segoe UI', sans-serif;
       background: #0f172a;
@@ -17,19 +20,23 @@
 
     header {
       background: linear-gradient(135deg, #1e3a5f, #2d6a4f);
-      padding: 1rem 2rem;
       text-align: center;
       position: relative;
     }
+    .header-img{
+      height: 5rem;
+    }
 
+    .header-brand{
+      background-color: white;
+      padding: 0.5rem;
+    }
     .header-actions {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
       display: flex;
       flex-direction: column;
       align-items: flex-end;
       gap: 0.4rem;
+      padding: 0.5rem;
     }
 
     .header-dropdown {
@@ -927,6 +934,11 @@
     #archives-list::-webkit-scrollbar { width: 4px; }
     #archives-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
 
+    .selections-actions-bar {
+      padding: 0.5rem 0.8rem;
+      border-bottom: 1px solid #1e293b;
+    }
+
     .archive-item {
       padding: 0.6rem 1rem;
       border-bottom: 1px solid #1e293b;
@@ -1163,3 +1175,91 @@
         width: 32px;
         background-color: red;
     }
+
+    /* ── Bouton toggle filtres ── */
+    .filters-toggle-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.4rem 1rem;
+      border-top: 1px solid #1e293b;
+    }
+
+    .btn-filters-toggle {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      padding: 0.3rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .btn-filters-toggle:hover { background: #334155; color: #e2e8f0; }
+    .btn-filters-toggle.active { background: #1e3a5f; border-color: #38bdf8; color: #38bdf8; }
+
+    .map-filter-badge {
+      font-size: 0.78rem;
+      color: #f59e0b;
+      background: rgba(245,158,11,0.12);
+      border: 1px solid rgba(245,158,11,0.4);
+      border-radius: 999px;
+      padding: 0.15rem 0.7rem;
+    }
+    .map-filter-badge.hidden { display: none; }
+
+    /* ── Panneau filtres collapsible ── */
+    .filters-panel-collapsible {
+      border-top: 1px solid #1e293b;
+      overflow: hidden;
+    }
+    .filters-panel-collapsible.hidden { display: none; }
+
+    /* La filters-bar est désormais dans le panneau, on retire le border-top dupliqué */
+    .filters-panel-collapsible .filters-bar { border-top: none; }
+
+    /* ── Carte Leaflet dans le panneau filtres ── */
+    .filter-map-container {
+      height: 300px;
+      width: 100%;
+      border-top: 1px solid #1e293b;
+    }
+
+    /* Thème sombre pour les popups Leaflet */
+    .leaflet-popup-content-wrapper {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .leaflet-popup-tip { background: #1e293b; }
+    .leaflet-tooltip {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      font-size: 0.78rem;
+    }
+
+    /* ── Slider années (couleur ambre pour différencier du slider célébrité) ── */
+    .year-slider-range { background: #f59e0b; }
+    .year-slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      pointer-events: auto;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #f59e0b;
+      border: 2px solid #0f172a;
+      cursor: pointer;
+      margin-top: -6px;
+    }
+    .year-slider-input::-moz-range-thumb {
+      pointer-events: auto;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #f59e0b;
+      border: 2px solid #0f172a;
+      cursor: pointer;
+    }
+    .celeb-slider-field label span { color: #fbbf24; }
+    #yearMinValue, #yearMaxValue { color: #f59e0b !important; }
+

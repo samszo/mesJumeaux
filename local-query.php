@@ -88,8 +88,8 @@ foreach ($rows as $row) {
     $valueStr    = $row['value_str']  ?? '';
     $importance  = intval($row['importance'] ?? 0);
     $lieu  = $row['lieu'] ?? "";
-    $lat  = intval($row['latitude'] ?? 0);
-    $lng  = intval($row['longitude'] ?? 0);
+    $lat  = $row['latitude'];
+    $lng  = $row['longitude'];
     $ima  = $row['ima'] ?? "";
     $occus    = $row['gOccu'] ? explode(",",$row['gOccu']) : [];
     foreach ($occus as $o) {
