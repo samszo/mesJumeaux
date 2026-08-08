@@ -19,7 +19,7 @@ $cacheDir  = __DIR__ . '/cache';
 if (!is_dir($cacheDir)) mkdir($cacheDir, 0755, true);
 
 $cacheFile = $cacheDir . '/local-' . $mmdd . '.json';
-$cacheTTL  = 7 * 24 * 3600;
+$cacheTTL  = 1000 * 24 * 3600;
 
 if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTTL) {
     header('X-Cache: HIT');
