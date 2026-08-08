@@ -179,7 +179,7 @@
 <script>
   const MONTHS = ['','Janvier','Février','Mars','Avril','Mai','Juin',
     'Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-  const tooltip = d3.select("#tooltip")
+  const tooltip = d3.select("#tooltip");
 
   // ── Rate-limiter images avec progression ─────────────────────────────────
   const imageRateLimiter = {
@@ -299,6 +299,7 @@
   // ── Catégories de personnes (classification par mots-clés) ────────────────
   // Faute d'occupation (P106) en base locale, on déduit la catégorie depuis
   // le champ "description" (courte notice Wikidata, FR/EN principalement).
+  let occupations = [];
   const CATEGORIES = [
     { key: 'politiciens',    label: 'Politiciens',    icon: '🏛️', keywords: [
       'politicien','politicienne','politique','homme politique','femme politique','president','ministre',
@@ -359,7 +360,15 @@
     return String(str || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   }
 
-  function classifyCategory(desc) {
+  function classifyCategory(r) {
+    //récupère les class
+    let desc = "";
+    r.occus.forEach((o,i)=>{
+      let refOccu = occupations.filter(ref=>ref.id==o);
+      if(refOccu.length)o = refOccu[0];
+      desc += i==0 ? "" : ", ";
+      desc += o.gClassLabel+" -> "+o.label; 
+    })
     const norm = normalizeText(desc);
     if (!norm) return CATEGORY_AUTRES;
     for (const cat of CATEGORIES) {
@@ -568,17 +577,13 @@
 
     try {
       const allRows = await localFetch(day, month);
-
+      occupations = allRows.occupations;
       // Classification par catégorie + indice de célébrité (une seule fois par personne)
-      for (const r of allRows) {
-        const desc = r.item.description || '';
-        r.category = classifyCategory(desc);
-        r.celebrityScore = celebrityScore(r);
-      }
-
       // Groupe par année, filtre selon startYear/endYear
       const byYear = {};
-      for (const r of allRows) {
+      for (const r of allRows.jumeaux) {
+        r.category = classifyCategory(r);
+        r.celebrityScore = celebrityScore(r);
         const y = r.year;
         if (!y || y > startYear || y < endYear) continue;
         if (!byYear[y]) byYear[y] = [];
@@ -611,15 +616,15 @@
   }
 
   function createCard(r, year) {
-    const name        = r.item.label    || '(sans nom)';
-    const desc        = r.item.description || '';
+    const name        = r.label    || '(sans nom)';
+    const desc        = r.description || '';
     const article     = r.articlename  || '';
-    const wikidataUrl = r.item.value ? `https://www.wikidata.org/wiki/${r.item.value}` : '#';
+    const wikidataUrl = r.id ? `https://www.wikidata.org/wiki/${r.id}` : '#';
     const wpUrl       = r.wikilang ? `https://${r.wikilang}.wikipedia.org/wiki/${encodeURIComponent(article)}` : null;
-    const category    = r.category || classifyCategory(desc);
-    const score       = r.celebrityScore ?? celebrityScore(desc, r.influencedCount);
+    const category    = r.category || classifyCategory(r);
+    const score       = r.celebrityScore ?? celebrityScore(r);
 
-    const qid = r.item.value || '';
+    const qid = r.id || '';
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.qid = qid;
@@ -667,7 +672,7 @@
       <span class="year-count">${results.length} personnalité${results.length > 1 ? 's' : ''}</span>
       <button class="btn-year-img" data-year="${year}" title="Charger les images de cette année en priorité">🖼</button>`;
     heading.querySelector('.btn-year-img').addEventListener('click', () => {
-      const ids = results.map(r => r.item.value).filter(Boolean);
+      const ids = results.map(r => r.id).filter(Boolean);
       imageRateLimiter.prioritize(ids);
       heading.querySelector('.btn-year-img').disabled = true;
     });
@@ -675,7 +680,7 @@
 
     const grid = document.createElement('div');
     grid.className = 'grid';
-    grid.dataset.naturalOrder = results.map(r => r.item.value).join('|');
+    grid.dataset.naturalOrder = results.map(r => r.id).join('|');
 
     for (const r of results) {
       grid.appendChild(createCard(r, year));
@@ -691,7 +696,7 @@
     addNavEntry(year, 'has-results', results.length);
 
     for (const r of results) {
-      const imgEl = document.getElementById(r.item.value + '-img');
+      const imgEl = document.getElementById(r.id + '-img');
       if (imgEl && r.image) {
         imageRateLimiter.enqueue(r, imgEl);
       }
@@ -744,7 +749,7 @@
     const groups = new Map();
     for (const { items } of state.allResults) {
       for (const r of items) {
-        const cat = r.category || classifyCategory(r.item.description || '');
+        const cat = r.category || classifyCategory(r);
         if (!groups.has(cat.key)) groups.set(cat.key, { cat, items: [] });
         groups.get(cat.key).items.push(r);
       }

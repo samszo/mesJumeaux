@@ -1,0 +1,83 @@
+Code,Acteur Social
+M:M:.a.-M:M:.a.-f.o.-',acteurs sociaux
+s.a.-s.a.-f.o.-',philosophe
+s.a.-b.a.-f.o.-',acteur
+s.a.-t.a.-f.o.-',informaticien
+s.a.-k.a.-f.o.-',politicien
+s.a.-m.a.-f.o.-',époux
+s.a.-n.a.-f.o.-',précurseur
+s.a.-d.a.-f.o.-',mentor
+s.a.-f.a.-f.o.-',psychologue
+s.a.-l.a.-f.o.-',innovateur
+b.a.-b.a.-f.o.-',auteur
+b.a.-s.a.-f.o.-',lecteur
+b.a.-t.a.-f.o.-',comptable
+b.a.-k.a.-f.o.-',activiste
+b.a.-m.a.-f.o.-',amant/e
+b.a.-n.a.-f.o.-',procureur
+b.a.-d.a.-f.o.-',publicitaire
+b.a.-f.a.-f.o.-',infirmier / soignant
+b.a.-l.a.-f.o.-',transporteur
+t.a.-b.a.-f.o.-',éditeur
+t.a.-s.a.-f.o.-',traducteur
+k.a.-s.a.-f.o.-',diplomate
+k.a.-b.a.-f.o.-',spectateur
+t.a.-t.a.-f.o.-',fondateur
+k.a.-t.a.-f.o.-',secrétaire
+t.a.-k.a.-f.o.-',fonctionnaire
+k.a.-k.a.-f.o.-',citoyen
+t.a.-m.a.-f.o.-',ancêtre
+k.a.-m.a.-f.o.-',frère/socur
+t.a.-n.a.-f.o.-',législateur
+k.a.-n.a.-f.o.-',juré
+t.a.-d.a.-f.o.-',investisseur
+k.a.-d.a.-f.o.-',vendeur
+t.a.-f.a.-f.o.-',pharmacien
+k.a.-f.a.-f.o.-',pourvoyeur
+t.a.-l.a.-f.o.-',archiviste
+k.a.-l.a.-f.o.-',syndiqué
+m.a.-s.a.-f.o.-',médiateur
+m.a.-b.a.-f.o.-',joueur
+m.a.-t.a.-f.o.-',notaire
+m.a.-k.a.-f.o.-',voisin
+m.a.-m.a.-f.o.-',familier
+m.a.-n.a.-f.o.-',bénévole
+m.a.-d.a.-f.o.-',partenaire
+m.a.-f.a.-f.o.-',aidant
+m.a.-l.a.-f.o.-',ouvrier
+n.a.-b.a.-f.o.-',journaliste
+n.a.-s.a.-f.o.-',adulte
+n.a.-t.a.-f.o.-',avocat
+n.a.-m.a.-f.o.-',père
+n.a.-n.a.-f.o.-',guide spirituel
+n.a.-d.a.-f.o.-',client
+n.a.-f.a.-f.o.-',médecin
+n.a.-l.a.-f.o.-',policier
+d.a.-b.a.-f.o.-',producteur
+d.a.-s.a.-f.o.-',étudiant
+d.a.-t.a.-f.o.-',banquier
+n.a.-k.a.-f.o.-',réformateur
+d.a.-k.a.-f.o.-',inspecteur
+d.a.-m.a.-f.o.-',enfant
+d.a.-n.a.-f.o.-',témoin
+d.a.-d.a.-f.o.-',inventeur
+d.a.-f.a.-f.o.-',enseignant
+d.a.-l.a.-f.o.-',agent de
+f.a.-b.a.-f.o.-',musicien
+f.a.-s.a.-f.o.-',consultant
+f.a.-t.a.-f.o.-',assureur
+f.a.-k.a.-f.o.-',hôte
+f.a.-m.a.-f.o.-',mere
+f.a.-n.a.-f.o.-',travailleur social
+f.a.-d.a.-f.o.-',technicien
+f.a.-f.a.-f.o.-',cultivateur / éleveur
+f.a.-l.a.-f.o.-',secouriste
+l.a.-b.a.-f.o.-',relation publique
+l.a.-s.a.-f.o.-',manager
+l.a.-t.a.-f.o.-',cartographe
+l.a.-k.a.-f.o.-',officier
+l.a.-m.a.-f.o.-',allié
+l.a.-n.a.-f.o.-',défendeur
+l.a.-d.a.-f.o.-',entrepreneur
+l.a.-f.a.-f.o.-',écologiste
+l.a.-l.a.-f.o.-',guerrier
