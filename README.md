@@ -1,6 +1,6 @@
 # Jumeaux de Naissance
 
-> Découvrez les personnalités historiques nées le même jour que vous, en interrogeant une base MySQL locale alimentée depuis Wikidata.
+> Découvrez les personnalités historiques nées le même jour, en interrogeant une base MySQL locale alimentée depuis Wikidata.
 
 **Stack :** PHP 8 · MySQL · Vanilla JS · D3.js v7 · Leaflet · Wikidata
 
