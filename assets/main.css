@@ -5,8 +5,8 @@
 
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
+      background: black;
+      color: white;
       min-height: 100vh;
     }
 
@@ -19,17 +19,21 @@
     }
 
     header {
-      background: linear-gradient(135deg, #1e3a5f, #2d6a4f);
+      background-color:  #fff;
       text-align: center;
       position: relative;
     }
     .header-img{
-      height: 5rem;
+      height: 2rem;
     }
 
     .header-brand{
-      background-color: white;
       padding: 0.5rem;
+      display:grid;
+      grid-template-columns:auto auto auto;
+      grid-template-rows:repeat(2, auto);
+      gap:8px;
+      align-items:center;
     }
     .header-actions {
       display: flex;
@@ -44,7 +48,7 @@
       flex-direction: column;
       gap: 0.3rem;
       background: #1e3a5f;
-      border: 1px solid #2d6a4f;
+      border: 2px solid #41a071;
       border-radius: 8px;
       padding: 0.4rem;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -54,7 +58,7 @@
 
     .btn-export {
       background: transparent;
-      border: 1px solid #94d2bd;
+      border: 2px solid #94d2bd;
       color: #f0f9ff;
       padding: 0.35rem 0.8rem;
       border-radius: 6px;
@@ -63,13 +67,13 @@
       white-space: nowrap;
     }
 
-    .btn-export:hover { background: #2d6a4f; }
+    .btn-export:hover { background: #41a071; }
 
     header h1 {
       font-size: 2.2rem;
       font-weight: 700;
       letter-spacing: -0.5px;
-      color: #f0f9ff;
+      color:black;
     }
 
     header p {
@@ -79,7 +83,6 @@
     }
 
     .search-section {
-      max-width: 600px;
       margin: 0.1rem auto;
       padding: 0 1rem 0.8rem;
       text-align: center;
@@ -101,31 +104,30 @@
 
     label {
       font-size: 0.85rem;
-      color: #94a3b8;
+      color: black;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
 
     select, input[type="number"] {
       background: #1e293b;
-      border: 1px solid #334155;
-      color: #e2e8f0;
-      padding: 0.6rem 1rem;
+      border: 2px solid #c2000b;
+      color: white;
+      padding: 0.6rem 0.6rem;
       border-radius: 8px;
       font-size: 1rem;
       outline: none;
       transition: border-color 0.2s;
-      min-width: 100px;
     }
 
     select:focus, input[type="number"]:focus {
-      border-color: #38bdf8;
+      border-color: #5f9bbb;
     }
 
     .btn-search {
-      background: linear-gradient(135deg, #0ea5e9, #2d6a4f);
+      background: black;
       color: white;
-      border: none;
+      border: 2px solid #c2000b;
       padding: 0.7rem 2rem;
       border-radius: 8px;
       font-size: 1rem;
@@ -145,7 +147,7 @@
       gap: 0.5rem;
       margin-top: 1rem;
       font-size: 0.9rem;
-      color: #94a3b8;
+      color: white;
     }
 
     .limit-field input {
@@ -159,17 +161,16 @@
       justify-content: center;
       align-items: flex-end;
       flex-wrap: wrap;
-      padding: 0.8rem 1rem;
+      padding: 0.8rem 0.3rem;
       margin: 0 auto;
-      max-width: 900px;
       border-top: 1px solid #1e293b;
     }
 
     .filters-bar input[type="number"] { min-width: unset; }
 
     .celeb-slider-field { min-width: 240px; }
-    .celeb-slider-field label { text-transform: none; letter-spacing: normal; }
-    .celeb-slider-field label span { color: #fbbf24; font-weight: 600; }
+    .celeb-slider-field label {color:#c2000b; text-transform: none; letter-spacing: normal; }
+    .celeb-slider-field label span {color:#c2000b; font-weight: 600; }
 
     .celeb-slider {
       position: relative;
@@ -184,8 +185,8 @@
       height: 4px;
       border-radius: 2px;
     }
-    .celeb-slider-track { left: 0; right: 0; background: #334155; }
-    .celeb-slider-range { background: #38bdf8; }
+    .celeb-slider-track { left: 0; right: 0; background: #c2000b; }
+    .celeb-slider-range { background: #c2000b; }
 
     .celeb-slider-input {
       position: absolute;
@@ -209,7 +210,7 @@
       width: 16px;
       height: 16px;
       border-radius: 50%;
-      background: #38bdf8;
+      background: #c2000b;
       border: 2px solid #0f172a;
       cursor: pointer;
       margin-top: -6px;
@@ -219,7 +220,7 @@
       width: 16px;
       height: 16px;
       border-radius: 50%;
-      background: #38bdf8;
+      background: #c2000b;
       border: 2px solid #0f172a;
       cursor: pointer;
     }
@@ -239,7 +240,7 @@
       width: 20px;
       height: 20px;
       border: 3px solid #334155;
-      border-top-color: #38bdf8;
+      border-top-color: #5f9bbb;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
       vertical-align: middle;
@@ -261,12 +262,10 @@
     }
 
     #results {
-      max-width: 900px;
       margin: 0 auto 3rem;
-      padding: 0 1rem;
+      padding: 3.5rem 1rem;
       overflow-y: scroll;
       min-height: 0px;
-      max-height: 600px;
     }
 
     .results-header {
@@ -279,7 +278,7 @@
     }
 
     .results-count {
-      color: #38bdf8;
+      color: #5f9bbb;
       font-weight: 600;
     }
 
@@ -291,7 +290,7 @@
 
     .card {
       background: #1e293b;
-      border: 1px solid #334155;
+      border: 2px solid #334155;
       border-radius: 12px;
       padding: 1.2rem;
       transition: transform 0.15s, box-shadow 0.15s;
@@ -303,7 +302,7 @@
     .card:hover {
       transform: translateY(-3px);
       box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-      border-color: #38bdf8;
+      border-color: #5f9bbb;
     }
 
     .card-name {
@@ -314,11 +313,11 @@
 
     .card-date {
       font-size: 0.85rem;
-      color: #94a3b8;
+      color: white;
     }
 
     .card-date span {
-      color: #38bdf8;
+      color: #5f9bbb;
       font-weight: 500;
     }
 
@@ -326,7 +325,7 @@
       margin-top: auto;
       display: inline-block;
       font-size: 0.8rem;
-      color: #2d6a4f;
+      color: #41a071;
       text-decoration: none;
       transition: color 0.2s;
     }
@@ -339,7 +338,7 @@
       margin: 1.5rem auto;
       padding: 1.2rem 1.5rem;
       background: #1e293b;
-      border: 1px solid #334155;
+      border: 2px solid #334155;
       border-radius: 14px;
     }
     .stats-section.hidden { display: none; }
@@ -347,7 +346,7 @@
     .stats-title {
       font-size: 1rem;
       font-weight: 700;
-      color: #38bdf8;
+      color: #5f9bbb;
       margin-bottom: 1rem;
     }
 
@@ -360,7 +359,7 @@
 
     .stats-card {
       background: #0f172a;
-      border: 1px solid #334155;
+      border: 2px solid #334155;
       border-radius: 10px;
       padding: 0.9rem 1rem;
       text-align: center;
@@ -375,7 +374,7 @@
 
     .stats-label {
       font-size: 0.75rem;
-      color: #94a3b8;
+      color: white;
       margin-top: 0.3rem;
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -391,7 +390,7 @@
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: #475569;
+      color: white;
       margin-bottom: 0.5rem;
     }
 
@@ -406,7 +405,7 @@
       width: 3.2rem;
       text-align: right;
       font-size: 0.85rem;
-      color: #94a3b8;
+      color: white;
       flex-shrink: 0;
     }
 
@@ -420,7 +419,7 @@
 
     .stats-top-bar {
       height: 100%;
-      background: linear-gradient(90deg, #2d6a4f, #38bdf8);
+      background: linear-gradient(90deg, #41a071, #5f9bbb);
       border-radius: 999px;
       transition: width 0.4s ease;
     }
@@ -457,12 +456,12 @@
     .card-checkbox {
       width: 1.1rem;
       height: 1.1rem;
-      accent-color: #38bdf8;
+      accent-color: #5f9bbb;
       cursor: pointer;
     }
 
     .card-selected {
-      border-color: #38bdf8 !important;
+      border-color: #5f9bbb !important;
       background: #172a3a !important;
     }
 
@@ -478,7 +477,7 @@
 
     .img-progress-label-inline {
       font-size: 0.78rem;
-      color: #94a3b8;
+      color: white;
       white-space: nowrap;
       flex-shrink: 0;
     }
@@ -495,14 +494,14 @@
     .img-progress-bar-inline {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+      background: linear-gradient(90deg,  #980000, #44a174);
       border-radius: 999px;
       transition: width 0.4s ease;
     }
 
     .img-progress-timer-inline {
       font-size: 0.72rem;
-      color: #475569;
+      color: white;
       white-space: nowrap;
       flex-shrink: 0;
     }
@@ -510,8 +509,8 @@
     /* ── Bouton image par année ── */
     .btn-year-img {
       background: transparent;
-      border: 1px solid #334155;
-      color: #94a3b8;
+      border: 2px solid #334155;
+      color: white;
       border-radius: 6px;
       padding: 0.1rem 0.4rem;
       font-size: 0.85rem;
@@ -519,7 +518,7 @@
       margin-left: 0.5rem;
       vertical-align: middle;
     }
-    .btn-year-img:hover { border-color: #38bdf8; color: #38bdf8; }
+    .btn-year-img:hover { border-color: #5f9bbb; color: #5f9bbb; }
     .btn-year-img:disabled { opacity: 0.4; cursor: default; }
 
     /* ── Modal titre/auteur ── */
@@ -536,7 +535,7 @@
 
     .modal-box {
       background: #1e293b;
-      border: 1px solid #38bdf8;
+      border: 2px solid #5f9bbb;
       border-radius: 14px;
       padding: 1.6rem;
       width: min(420px, 90vw);
@@ -551,20 +550,20 @@
       flex-direction: column;
       gap: 0.3rem;
       font-size: 0.85rem;
-      color: #94a3b8;
+      color: white;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
     .modal-input {
       background: #0f172a;
-      border: 1px solid #334155;
+      border: 2px solid #334155;
       color: #e2e8f0;
       padding: 0.55rem 0.8rem;
       border-radius: 8px;
       font-size: 1rem;
       outline: none;
     }
-    .modal-input:focus { border-color: #38bdf8; }
+    .modal-input:focus { border-color: #5f9bbb; }
     .modal-actions { display: flex; gap: 0.6rem; justify-content: flex-end; }
 
     /* ── Vue sélection chargée ── */
@@ -587,11 +586,11 @@
     .selection-view-title {
       font-size: 1.2rem;
       font-weight: 700;
-      color: #38bdf8;
+      color: #5f9bbb;
     }
     .selection-view-meta {
       font-size: 0.82rem;
-      color: #94a3b8;
+      color: white;
       margin-top: 0.2rem;
     }
 
@@ -602,7 +601,7 @@
       left: 50%;
       transform: translateX(-50%);
       background: #1e3a5f;
-      border: 1px solid #38bdf8;
+      border: 2px solid #5f9bbb;
       border-radius: 12px;
       padding: 0.7rem 1.2rem;
       display: flex;
@@ -620,7 +619,7 @@
     .selection-actions { display: flex; gap: 0.5rem; }
 
     .btn-sel-export {
-      background: #2d6a4f;
+      background: #41a071;
       border: none;
       color: #f0f9ff;
       padding: 0.3rem 0.7rem;
@@ -629,12 +628,12 @@
       font-size: 0.82rem;
       font-weight: 600;
     }
-    .btn-sel-export:hover { background: #38bdf8; color: #0f172a; }
+    .btn-sel-export:hover { background: #5f9bbb; color: #0f172a; }
 
     .btn-sel-clear {
       background: transparent;
-      border: 1px solid #94a3b8;
-      color: #94a3b8;
+      border: 2px solid white;
+      color: white;
       padding: 0.3rem 0.7rem;
       border-radius: 6px;
       cursor: pointer;
@@ -645,11 +644,11 @@
     .tag-year {
       display: inline-block;
       background: #0f172a;
-      border: 1px solid #334155;
+      border: 2px solid #334155;
       border-radius: 999px;
       padding: 0.15rem 0.6rem;
       font-size: 0.75rem;
-      color: #94a3b8;
+      color: white;
     }
 
     #pagination {
@@ -668,7 +667,7 @@
 
     .pager-nav, .pager-num {
       background: #1e293b;
-      border: 1px solid #334155;
+      border: 2px solid #334155;
       color: #e2e8f0;
       padding: 0.45rem 0.9rem;
       border-radius: 8px;
@@ -679,7 +678,7 @@
 
     .pager-nav:hover:not(:disabled), .pager-num:hover {
       background: #334155;
-      border-color: #38bdf8;
+      border-color: #5f9bbb;
     }
 
     .pager-nav:disabled {
@@ -697,7 +696,7 @@
 
     .btn-stop {
       background: #7f1d1d;
-      border: 1px solid #ef4444;
+      border: 2px solid #ef4444;
       color: #fca5a5;
       padding: 0.5rem 1.8rem;
       border-radius: 8px;
@@ -714,7 +713,7 @@
     .year-heading {
       font-size: 1.3rem;
       font-weight: 700;
-      color: #38bdf8;
+      color: #5f9bbb;
       margin-bottom: 0.8rem;
       padding-bottom: 0.4rem;
       border-bottom: 1px solid #1e293b;
@@ -726,19 +725,19 @@
     .year-count {
       font-size: 0.8rem;
       font-weight: 400;
-      color: #64748b;
+      color: white;
     }
 
     .card-desc {
       font-size: 0.8rem;
-      color: #64748b;
+      color: white;
       font-style: italic;
     }
 
     .btn-export {
       background: #1e3a5f;
-      border: 1px solid #38bdf8;
-      color: #38bdf8;
+      border: 2px solid #5f9bbb;
+      color: #5f9bbb;
       padding: 0.5rem 1.4rem;
       border-radius: 8px;
       font-size: 0.9rem;
@@ -749,16 +748,11 @@
 
     /* ── Menu flottant ── */
     .nav-toggle {
-      position: fixed;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 200;
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #94a3b8;
+      background: black;
+      border: 2px solid #c2000b;
+      color: white;
       width: 2.2rem;
-      height: 2.2rem;
+      height: 2.4rem;
       border-radius: 8px;
       font-size: 1rem;
       cursor: pointer;
@@ -788,13 +782,13 @@
 
     .year-nav-header {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
       padding: 0.7rem 0.8rem;
       border-bottom: 1px solid #1e293b;
-      font-size: 0.8rem;
+      font-size: 1rem;
       font-weight: 600;
-      color: #94a3b8;
+      color: white;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       flex-shrink: 0;
@@ -802,11 +796,12 @@
     .year-nav-close {
       background: none;
       border: none;
-      color: #64748b;
+      color: white;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 1rem;
       line-height: 1;
       padding: 0.1rem 0.3rem;
+      margin-left: 1rem;
     }
     .year-nav-close:hover { color: #e2e8f0; }
 
@@ -827,35 +822,36 @@
       gap: 0.4rem;
       padding: 0.3rem 0.8rem;
       font-size: 0.82rem;
-      color: #94a3b8;
+      color: white;
       text-decoration: none;
       transition: background 0.1s, color 0.1s;
       border-left: 3px solid transparent;
     }
     .nav-year-item a:hover { background: #1e293b; color: #e2e8f0; }
-    .nav-year-item.has-results a { color: #38bdf8; border-left-color: #38bdf8; }
-    .nav-year-item.is-empty  a { color: #475569; border-left-color: #334155; }
+    .nav-year-item.has-results a { color: #5f9bbb; border-left-color: #5f9bbb; }
+    .nav-year-item.is-empty  a { color: white; border-left-color: #334155; }
     .nav-year-item.has-error a { color: #f87171; border-left-color: #f87171; }
     .nav-year-item .nav-dot  { font-size: 0.6rem; flex-shrink: 0; }
 
     /* ── Bouton archives dans le header ── */
     .btn-archives {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #f0f9ff;
-      padding: 0.4rem 1rem;
+      height: 2.5rem;
+      background: black;
+      border: 2px solid #c2000b;
+      color: white;
+      padding: 0.4rem 0.4rem;
       border-radius: 8px;
-      font-size: 0.85rem;
+      font-size: 1rem;
       cursor: pointer;
       transition: background 0.15s;
+      margin-left: 0.85rem;
     }
     .btn-archives:hover { background: rgba(255,255,255,0.15); }
-    .btn-archives.active { background: rgba(56,189,248,0.25); border-color: #38bdf8; color: #38bdf8; }
-    header { position: relative; }
+    .btn-archives.active { background: rgba(56,189,248,0.25); border-color: #5f9bbb; color: #5f9bbb; }
 
     .sort-select {
       background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.2);
       color: #f0f9ff;
       padding: 0.4rem 0.8rem;
       border-radius: 8px;
@@ -863,7 +859,7 @@
       cursor: pointer;
       min-width: unset;
     }
-    .sort-select:focus { border-color: #38bdf8; }
+    .sort-select:focus { border-color: #5f9bbb; }
 
     /* ── Catégorie & indice de célébrité (cards) ── */
     .card-category {
@@ -872,7 +868,7 @@
       gap: 0.3rem;
       align-self: flex-start;
       background: rgba(56,189,248,0.12);
-      border: 1px solid rgba(56,189,248,0.35);
+      border: 2px solid rgba(56,189,248,0.35);
       color: #7dd3fc;
       font-size: 0.72rem;
       padding: 0.15rem 0.55rem;
@@ -885,11 +881,11 @@
       font-weight: 600;
     }
     .card-celeb-zero {
-      color: #64748b;
+      color: white;
       font-weight: 400;
     }
 
-    .category-count { font-size: 0.8rem; font-weight: 400; color: #64748b; }
+    .category-count { font-size: 0.8rem; font-weight: 400; color: white; }
 
     /* ── Panneau archives ── */
     .archives-panel {
@@ -914,13 +910,13 @@
       border-bottom: 1px solid #1e293b;
       font-size: 0.85rem;
       font-weight: 600;
-      color: #94a3b8;
+      color: white;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       flex-shrink: 0;
     }
     .archives-header button {
-      background: none; border: none; color: #64748b;
+      background: none; border: none; color: white;
       cursor: pointer; font-size: 1rem;
     }
     .archives-header button:hover { color: #e2e8f0; }
@@ -953,7 +949,7 @@
     }
     .archive-item-meta {
       font-size: 0.75rem;
-      color: #475569;
+      color: white;
       margin-top: 0.2rem;
     }
 
@@ -962,7 +958,7 @@
       align-items: center;
       gap: 1rem;
       background: #1c1010;
-      border: 1px solid #7f1d1d;
+      border: 2px solid #7f1d1d;
       color: #fca5a5;
       padding: 0.6rem 1.2rem;
       border-radius: 8px;
@@ -995,7 +991,7 @@
       padding-bottom: 0.4rem;
       border-bottom: 1px solid #1e293b;
       font-size: 0.85rem;
-      color: #64748b;
+      color: white;
     }
 
     .heatmap-nav {
@@ -1005,22 +1001,22 @@
 
     .btn-heatmap-nav {
       background: #1e293b;
-      border: 1px solid #334155;
-      color: #94a3b8;
+      border: 2px solid #334155;
+      color: white;
       padding: 0.3rem 0.8rem;
       border-radius: 6px;
       font-size: 0.82rem;
       cursor: pointer;
       transition: background 0.15s, border-color 0.15s;
     }
-    .btn-heatmap-nav:hover { background: #334155; border-color: #38bdf8; color: #e2e8f0; }
+    .btn-heatmap-nav:hover { background: #334155; border-color: #5f9bbb; color: #e2e8f0; }
 
     #cal-heatmap {
       overflow-x: auto;
     }
 
     /* Override Cal-HeatMap colors to match dark theme */
-    #cal-heatmap .ch-domain-text { fill: #94a3b8 !important; font-size: 11px; }
+    #cal-heatmap .ch-domain-text { fill: white !important; font-size: 11px; }
     #cal-heatmap .ch-subdomain-bg { fill: #1e293b !important; }
     #cal-heatmap text { fill: #64748b !important; font-family: 'Segoe UI', sans-serif; }
 
@@ -1040,7 +1036,7 @@
       padding-bottom: 0.4rem;
       border-bottom: 1px solid #1e293b;
       font-size: 0.85rem;
-      color: #64748b;
+      color: white;
     }
 
     .tl-row {
@@ -1059,11 +1055,11 @@
       width: 48px;
       text-align: right;
       font-size: 0.82rem;
-      color: #94a3b8;
+      color: white;
       flex-shrink: 0;
       font-variant-numeric: tabular-nums;
     }
-    .tl-row.tl-active .tl-year { color: #38bdf8; font-weight: 600; }
+    .tl-row.tl-active .tl-year { color: #5f9bbb; font-weight: 600; }
 
     .tl-bar-wrap {
       flex: 1;
@@ -1075,14 +1071,14 @@
 
     .tl-bar {
       height: 14px;
-      background: linear-gradient(90deg, #0ea5e9 0%, #2d6a4f 100%);
+      background: linear-gradient(90deg, #0ea5e9 0%, #41a071 100%);
       border-radius: 3px;
       display: flex;
       align-items: center;
       min-width: 2px;
       transition: width 0.4s ease;
     }
-    .tl-row.tl-active .tl-bar { background: linear-gradient(90deg, #38bdf8, #52b788); }
+    .tl-row.tl-active .tl-bar { background: linear-gradient(90deg, #5f9bbb, #52b788); }
 
     .tl-count {
       font-size: 0.7rem;
@@ -1097,8 +1093,8 @@
 
     .btn-load-img {
       background: #0f172a;
-      border: 1px solid #334155;
-      color: #94a3b8;
+      border: 2px solid #334155;
+      color: white;
       padding: 0.2rem 0.7rem;
       border-radius: 6px;
       font-size: 0.75rem;
@@ -1106,12 +1102,12 @@
       transition: background 0.15s, color 0.15s;
       margin-left: auto;
     }
-    .btn-load-img:hover { background: #1e293b; color: #38bdf8; border-color: #38bdf8; }
+    .btn-load-img:hover { background: #1e293b; color: #5f9bbb; border-color: #5f9bbb; }
     .btn-load-img:disabled { opacity: 0.5; cursor: default; }
 
     .btn-retry {
       background: #1e293b;
-      border: 1px solid #f87171;
+      border: 2px solid #f87171;
       color: #f87171;
       padding: 0.3rem 0.9rem;
       border-radius: 6px;
@@ -1123,14 +1119,15 @@
     .btn-retry:hover { background: #2d1f1f; }
 
     @media print {
-      #top-bar, #status, #stop-bar, #export-bar, #retry-errors-bar, #timeline, .year-nav, .nav-toggle { display: none !important; }
+      #top-bar, #status, #stop-bar, #export-bar, #retry-errors-bar, #timeline, .year-nav, 
+      .nav-toggle { display: none !important; }
       body { background: #fff; color: #000; font-family: Georgia, serif; }
       #results { max-width: 100%; padding: 0; margin: 0; }
       .year-heading { font-size: 1.2rem; color: #000; border-bottom: 2px solid #000; margin-bottom: 0.5rem; page-break-after: avoid; }
       .year-count { color: #555; }
       .year-section { page-break-inside: avoid; margin-bottom: 1.5rem; }
       .grid { display: block; columns: 2; column-gap: 1rem; }
-      .card { break-inside: avoid; background: none; border: 1px solid #ccc; border-radius: 4px; padding: 0.5rem; margin-bottom: 0.5rem; box-shadow: none; }
+      .card { break-inside: avoid; background: none; border: 2px solid #ccc; border-radius: 4px; padding: 0.5rem; margin-bottom: 0.5rem; box-shadow: none; }
       .card:hover { transform: none; box-shadow: none; }
       .card-name { font-size: 0.95rem; font-weight: bold; color: #000; }
       .card-desc { color: #444; }
@@ -1158,7 +1155,7 @@
     .yearBlockButton{
         height: 16px;
         width: 16px;
-        background-color: red;
+        background-color: #c2000b;
     }
     #tooltip{
         position: absolute;
@@ -1173,22 +1170,20 @@
     .yearLegendButton{
         height: 16px;
         width: 32px;
-        background-color: red;
+        background-color: #c2000b;
     }
 
     /* ── Bouton toggle filtres ── */
     .filters-toggle-bar {
       display: flex;
       align-items: center;
-      gap: 0.8rem;
-      padding: 0.4rem 1rem;
-      border-top: 1px solid #1e293b;
     }
+
 
     .btn-filters-toggle {
       background: #1e293b;
-      border: 1px solid #334155;
-      color: #94a3b8;
+      border: 2px solid #334155;
+      color: white;
       padding: 0.3rem 0.9rem;
       border-radius: 8px;
       font-size: 0.85rem;
@@ -1196,13 +1191,13 @@
       transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
     .btn-filters-toggle:hover { background: #334155; color: #e2e8f0; }
-    .btn-filters-toggle.active { background: #1e3a5f; border-color: #38bdf8; color: #38bdf8; }
+    .btn-filters-toggle.active { background: #1e3a5f; border-color: #5f9bbb; color: #5f9bbb; }
 
     .map-filter-badge {
       font-size: 0.78rem;
       color: #f59e0b;
       background: rgba(245,158,11,0.12);
-      border: 1px solid rgba(245,158,11,0.4);
+      border: 2px solid rgba(245,158,11,0.4);
       border-radius: 999px;
       padding: 0.15rem 0.7rem;
     }
@@ -1229,25 +1224,25 @@
     .leaflet-popup-content-wrapper {
       background: #1e293b;
       color: #e2e8f0;
-      border: 1px solid #334155;
+      border: 2px solid #334155;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
     .leaflet-popup-tip { background: #1e293b; }
     .leaflet-tooltip {
       background: #1e293b;
       color: #e2e8f0;
-      border: 1px solid #334155;
+      border: 2px solid #334155;
       font-size: 0.78rem;
     }
 
     /* ── Slider années (couleur ambre pour différencier du slider célébrité) ── */
-    .year-slider-range { background: #f59e0b; }
+    .year-slider-range { background: #68b28d; }
     .year-slider-input::-webkit-slider-thumb {
       -webkit-appearance: none;
       pointer-events: auto;
       width: 16px; height: 16px;
       border-radius: 50%;
-      background: #f59e0b;
+      background: #68b28d;
       border: 2px solid #0f172a;
       cursor: pointer;
       margin-top: -6px;
@@ -1256,10 +1251,64 @@
       pointer-events: auto;
       width: 16px; height: 16px;
       border-radius: 50%;
-      background: #f59e0b;
+      background: #68b28d;
       border: 2px solid #0f172a;
       cursor: pointer;
     }
-    .celeb-slider-field label span { color: #fbbf24; }
-    #yearMinValue, #yearMaxValue { color: #f59e0b !important; }
+    #yearFilterLabel{
+      color:#68b28d;
+    }
 
+    #yearMinValue, #yearMaxValue { color: #68b28d !important; }
+
+    .hidden:not(.year-nav):not(.archives-panel) { display: none !important; }
+    .header-columns { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 1rem; }
+    .filter-map-container { height: 300px; width: 100%; border-top: 1px solid #1e293b; }
+    .btn-filters-toggle { background: black; border: 2px solid #c2000b; color: white; padding: .3rem .6rem; border-radius: 8px; font-size: 1rem; cursor: pointer; }
+    .btn-filters-toggle:hover { background: black; color: #e2e8f0; }
+    .btn-filters-toggle.active { background: black; border-color:#c2000b; color:#c2000b; }
+    .map-filter-badge {
+    font-size: 1rem;
+    /* color: #f59e0b; */
+    background: black;
+    border: 2px solid #52A87C;
+    border-radius: 8px;
+    /* padding: .15rem .7rem; */
+    height: 2.4rem;
+    }
+    .leaflet-popup-content-wrapper { background: #1e293b; color: #e2e8f0; border: 2px solid #334155; }
+    .leaflet-popup-tip { background: #1e293b; }
+    .leaflet-tooltip { background: #1e293b; color: #e2e8f0; border: 2px solid #334155; font-size: .78rem; }
+
+
+    #header-toggle-btn {
+      display: none;
+      position: fixed;
+      top: 0.6rem;
+      left: 0.6rem;
+      z-index: 3000;
+      background: black;
+      border: 2px solid #c2000b;
+      color: white;
+      height: 2.4rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      padding: 1rem;
+    }
+
+
+
+
+    @media (max-width: 768px) and (orientation: portrait) {
+      #header-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      body.mobile-header-collapsed #top-bar {
+        display: none;
+      }
+    }
