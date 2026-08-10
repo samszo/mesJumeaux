@@ -550,6 +550,98 @@
     });
   }
 
+  // Retourne les cartes qui passent tous les filtres sauf celui exclu (cross-filtering).
+  function _cardsVisibleExcluding(exclude) {
+    const minVal = +document.getElementById('celebMinRange').value;
+    const maxVal = +document.getElementById('celebMaxRange').value;
+    const cat    = document.getElementById('categoryFilterSelect').value;
+    const yMin   = +document.getElementById('yearMinRange').value;
+    const yMax   = +document.getElementById('yearMaxRange').value;
+    const result = [];
+    for (const card of state.cardsByQid.values()) {
+      let ok = true;
+      if (exclude !== 'celeb') {
+        const score = parseFloat(card.dataset.score) || 0;
+        if (score < minVal || score > maxVal) ok = false;
+      }
+      if (ok && exclude !== 'cat' && cat && card.dataset.category !== cat) ok = false;
+      if (ok && exclude !== 'year' && isYearFilterActive()) {
+        const y = parseInt(card.dataset.year);
+        if (!isNaN(y) && (y < yMin || y > yMax)) ok = false;
+      }
+      if (ok && exclude !== 'geo' && state.mapFilterIds !== null) {
+        const { lat, lng, qid } = card.dataset;
+        if (lat && lng && !state.mapFilterIds.has(qid)) ok = false;
+      }
+      if (ok) result.push(card);
+    }
+    return result;
+  }
+
+  // Met à jour les bornes/options des filtres selon les cartes encore visibles (faceting dynamique).
+  let _updatingFacets = false;
+  function updateFacets() {
+    if (_updatingFacets) return;
+    _updatingFacets = true;
+
+    // --- Célébrité : bornes calculées sur les cartes visibles sans le filtre célébrité ---
+    const celebCards = _cardsVisibleExcluding('celeb');
+    if (celebCards.length) {
+      const scores = celebCards.map(c => parseFloat(c.dataset.score) || 0);
+      const newMin = Math.floor(Math.min(...scores));
+      const newMax = Math.ceil(Math.max(...scores));
+      const minR = document.getElementById('celebMinRange');
+      const maxR = document.getElementById('celebMaxRange');
+      const curMin = +minR.value, curMax = +maxR.value;
+      for (const r of [minR, maxR]) { r.min = newMin; r.max = newMax; }
+      minR.value = Math.max(newMin, Math.min(curMin, newMax));
+      maxR.value = Math.min(newMax, Math.max(curMax, newMin));
+      updateCelebSliderUI();
+    }
+
+    // --- Années : bornes calculées sur les cartes visibles sans le filtre année ---
+    const yearCards = _cardsVisibleExcluding('year');
+    if (yearCards.length) {
+      const years = yearCards.map(c => parseInt(c.dataset.year)).filter(y => !isNaN(y));
+      if (years.length) {
+        const newMin = Math.min(...years), newMax = Math.max(...years);
+        const yMinR = document.getElementById('yearMinRange');
+        const yMaxR = document.getElementById('yearMaxRange');
+        const curMin = +yMinR.value, curMax = +yMaxR.value;
+        for (const r of [yMinR, yMaxR]) { r.min = newMin; r.max = newMax; }
+        yMinR.value = Math.max(newMin, Math.min(curMin, newMax));
+        yMaxR.value = Math.min(newMax, Math.max(curMax, newMin));
+        updateYearSliderUI();
+      }
+    }
+
+    // --- Catégorie : désactive les options sans cartes visibles ---
+    const catCards = _cardsVisibleExcluding('cat');
+    const availCats = new Set(catCards.map(c => c.dataset.category));
+    const catSel = document.getElementById('categoryFilterSelect');
+    for (const opt of catSel.options) {
+      if (!opt.value) continue;
+      opt.disabled = !availCats.has(opt.value);
+    }
+    if (catSel.value && !availCats.has(catSel.value)) {
+      catSel.value = '';
+    }
+
+    // --- Carte : atténue les marqueurs filtrés par célébrité + année + catégorie ---
+    if (leafletLayer) {
+      const geoCards = _cardsVisibleExcluding('geo');
+      const passQids = new Set(geoCards.map(c => c.dataset.qid));
+      leafletLayer.eachLayer(m => {
+        if (m._qid !== undefined) {
+          const on = passQids.has(m._qid);
+          m.setStyle({ fillOpacity: on ? 0.8 : 0, opacity: on ? 1 : 0 });
+        }
+      });
+    }
+
+    _updatingFacets = false;
+  }
+
   function applyFilters() {
     const minVal = +document.getElementById('celebMinRange').value;
     const maxVal = +document.getElementById('celebMaxRange').value;
@@ -574,6 +666,7 @@
       card.classList.toggle('filtered-out', !visible);
     }
 
+    updateFacets();
     reorderGrids();
 
     document.querySelectorAll('.year-section').forEach(section => {
@@ -1160,7 +1253,7 @@
     else { leafletLayer = L.layerGroup().addTo(leafletMap); }
 
     for (const pt of state.mapPoints) {
-      L.circleMarker([pt.lat, pt.lng], {
+      const m = L.circleMarker([pt.lat, pt.lng], {
         radius: 6,
         color: '#0ea5e9',
         fillColor: '#38bdf8',
@@ -1168,8 +1261,9 @@
         weight: 1.5,
       })
         .bindTooltip(`<strong>${pt.label}</strong><br>${pt.lieu || ''} · ${pt.year}`, { sticky: true })
-        .on('click', () => showYearFromTimeline(pt.year))
-        .addTo(leafletLayer);
+        .on('click', () => showYearFromTimeline(pt.year));
+      m._qid = pt.id;
+      m.addTo(leafletLayer);
     }
 
     if (state.mapPoints.length) {
